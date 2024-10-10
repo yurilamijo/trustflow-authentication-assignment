@@ -27,7 +27,3 @@ class TaskDAO(id: EntityID<Int>) : IntEntity(id) {
 fun taskDAOToTask(dao: TaskDAO): Task {
     return Task(dao.name, dao.description, Priority.valueOf(dao.priority))
 }
-
-suspend fun <T> dbQuery(block: Transaction.() -> T): T {
-    return newSuspendedTransaction(Dispatchers.IO, statement = block)
-}
