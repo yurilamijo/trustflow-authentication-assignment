@@ -8,7 +8,7 @@ import org.jetbrains.exposed.dao.id.IntIdTable
 
 object UserTable : IntIdTable("user") {
     val username = varchar("username", 50)
-    val password = varchar("password", 50)
+    val password = varchar("password", 255)
 }
 
 class UserDAO(id: EntityID<Int>) : IntEntity(id) {

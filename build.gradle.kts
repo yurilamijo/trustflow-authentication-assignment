@@ -56,4 +56,7 @@ dependencies {
 
     // Dependency Injection
     implementation("io.insert-koin:koin-ktor:$koinKtor")
+
+    // Hashing
+    implementation("org.mindrot:jbcrypt:0.3m")
 }

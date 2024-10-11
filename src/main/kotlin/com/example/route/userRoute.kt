@@ -1,9 +1,11 @@
 package com.example.route
 
+import com.example.extension.hashPassword
+import com.example.extension.verifyPassword
 import com.example.model.JWTConfig
+import com.example.model.User
 import com.example.model.createToken
 import com.example.model.verify
-import com.example.plugins.name
 import com.example.repository.IUserRepository
 import io.ktor.http.*
 import io.ktor.server.auth.*
@@ -21,43 +23,52 @@ data class RefreshToken(val token: String)
 
 fun Routing.userRoute(jwtConfig: JWTConfig, userRepository: IUserRepository) {
     post("/login") {
-        val login = call.receive<Login>()
-        val user = userRepository.getUserByUsername(login.username)
+        val (username, password) = call.receive<Login>()
+        val user = userRepository.getUserByUsername(username)
 
-        if (login.username == user?.username && login.password == user?.password) {
-            // Continue
+        if (user != null && verifyPassword(password, user.password)) {
+            fun createToken(expirationSeconds: Long): String =
+                jwtConfig.createToken(user, expirationSeconds)
+
+            val accessToken = createToken(jwtConfig.expirationInSeconds.accessToken)
+            val refreshToken = createToken(jwtConfig.expirationInSeconds.refreshToken)
+            call.respond(
+                mapOf(
+                    "accessToken" to accessToken,
+                    "refreshToken" to refreshToken
+                )
+            )
         } else {
             call.respond(HttpStatusCode.Forbidden, "Login failed")
             return@post
         }
+    }
+    post("/register") {
+        var (username, password) = call.receive<Login>();
 
-        fun createToken(expirationSeconds: Long): String =
-            jwtConfig.createToken(user, expirationSeconds)
-
-        val accessToken = createToken(jwtConfig.expirationInSeconds.accessToken)
-        val refreshToken = createToken(jwtConfig.expirationInSeconds.refreshToken)
-        call.respond(
-            mapOf(
-                "accessToken" to accessToken,
-                "refreshToken" to refreshToken
+        if (userRepository.doesUserExistsByUsername(username)) {
+            call.respond(HttpStatusCode.BadRequest, "A user with the username: $username already exists")
+        } else {
+            val user = User(
+                username = username,
+                password = hashPassword(password)
             )
-        )
+
+            userRepository.createUser(user)
+            call.respond(HttpStatusCode.Created, "User account created with username '$username'")
+        }
     }
     post("/refresh") {
-        // Extract the refresh token from the request
         val refreshToken = call.receive<RefreshToken>()
 
-        // Verify the refresh token and obtain the user
         val user = jwtConfig.verify(refreshToken.token) ?: run {
             call.respond(HttpStatusCode.Forbidden, "Invalid refresh token")
             return@post
         }
 
-        // Create new access and refresh tokens for the user
         val newAccessToken = jwtConfig.createToken(user, jwtConfig.expirationInSeconds.accessToken)
         val newRefreshToken = jwtConfig.createToken(user, jwtConfig.expirationInSeconds.refreshToken)
 
-        // Respond with the new tokens
         call.respond(
             mapOf(
                 "accessToken" to newAccessToken,
@@ -68,10 +79,13 @@ fun Routing.userRoute(jwtConfig: JWTConfig, userRepository: IUserRepository) {
     authenticate("auth-jwt") {
         get("/hello") {
             val principal = call.principal<JWTPrincipal>()
-            val username = principal!!.payload.getClaim("username").asString()
+            val username = principal!!.payload.getClaim("name").asString()
             val expiresAt = principal.expiresAt?.time?.minus(System.currentTimeMillis())
 
             call.respondText("Hello, $username! Token is expired at $expiresAt ms.")
         }
     }
+
+
 }
+
