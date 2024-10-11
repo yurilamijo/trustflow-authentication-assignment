@@ -31,7 +31,6 @@ class TaskRepository : ITaskRepository {
     }
 
     override suspend fun createTask(task: Task): Task {
-        //TODO:: Add check for duplicate task
         return taskDAOToTask(
             dbQuery {
                 TaskDAO.new {

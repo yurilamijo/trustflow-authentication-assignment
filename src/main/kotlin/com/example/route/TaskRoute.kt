@@ -5,6 +5,7 @@ import com.example.model.Task
 import com.example.repository.ITaskRepository
 import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.JsonConvertException
+import io.ktor.server.auth.authenticate
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Routing
@@ -15,69 +16,72 @@ import io.ktor.server.routing.route
 import kotlin.text.isNullOrEmpty
 
 fun Routing.taskRoute(taskRepository: ITaskRepository) {
-    route("/tasks") {
-        get {
-            val tasks = taskRepository.getAllTask()
-            call.respond(tasks)
-        }
+    authenticate("auth-jwt") {
+        route("/tasks") {
+            get {
+                val tasks = taskRepository.getAllTask()
+                call.respond(tasks)
+            }
 
-        get("/byName/{name}") {
-            val nameAsString = call.pathParameters["name"].takeIf { it.isNullOrEmpty() == false }
-                ?: return@get call.respond(
-                    HttpStatusCode.BadRequest
-                )
+            get("/byName/{name}") {
+                val nameAsString = call.pathParameters["name"].takeIf { it.isNullOrEmpty() == false }
+                    ?: return@get call.respond(
+                        HttpStatusCode.BadRequest
+                    )
 
-            val task = taskRepository.getTaskByName(nameAsString) ?: return@get call.respond(HttpStatusCode.NotFound)
+                val task =
+                    taskRepository.getTaskByName(nameAsString) ?: return@get call.respond(HttpStatusCode.NotFound)
 
-            call.respond(task)
-        }
+                call.respond(task)
+            }
 
-        get("/byPriority/{priority}") {
-            val priorityAsString = call.pathParameters["priority"]
+            get("/byPriority/{priority}") {
+                val priorityAsString = call.pathParameters["priority"]
 
-            if (priorityAsString.isNullOrEmpty()) {
-                call.respond(HttpStatusCode.BadRequest)
-                return@get
-            } else if (Priority.enumContains(priorityAsString)) {
-                val priority = Priority.valueOf(priorityAsString)
-                val tasksByPriority = taskRepository.getAllTaskByPriority(priority)
-
-                if (tasksByPriority.isEmpty()) {
-                    call.respond(HttpStatusCode.NotFound)
+                if (priorityAsString.isNullOrEmpty()) {
+                    call.respond(HttpStatusCode.BadRequest)
                     return@get
+                } else if (Priority.enumContains(priorityAsString)) {
+                    val priority = Priority.valueOf(priorityAsString)
+                    val tasksByPriority = taskRepository.getAllTaskByPriority(priority)
+
+                    if (tasksByPriority.isEmpty()) {
+                        call.respond(HttpStatusCode.NotFound)
+                        return@get
+                    } else {
+                        call.respond(tasksByPriority)
+                    }
                 } else {
-                    call.respond(tasksByPriority)
-                }
-            } else {
-                call.respond(HttpStatusCode.BadRequest)
-                return@get
-            }
-        }
-
-        post {
-            try {
-                val task = call.receive<Task>()
-                taskRepository.createTask(task)
-                call.respond(HttpStatusCode.Created, task)
-            } catch (ex: Exception) {
-                when (ex) {
-                    is IllegalStateException, is JsonConvertException -> call.respond(HttpStatusCode.BadRequest)
-                    else -> throw ex
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@get
                 }
             }
-        }
 
-        delete("/{name}") {
-            val name = call.parameters["name"]
+            post {
+                try {
+                    val task = call.receive<Task>()
+                    taskRepository.createTask(task)
+                    call.respond(HttpStatusCode.Created, task)
+                } catch (ex: Exception) {
+                    when (ex) {
+                        is IllegalStateException, is JsonConvertException -> call.respond(HttpStatusCode.BadRequest)
+                        else -> throw ex
+                    }
+                }
+            }
 
-            if (name.isNullOrEmpty()) {
-                call.respond(HttpStatusCode.BadRequest)
-                return@delete
-            } else if (taskRepository.deleteTask(name)) {
-                call.respond(HttpStatusCode.NoContent)
-            } else {
-                call.respond(HttpStatusCode.NotFound)
-                return@delete
+            delete("/{name}") {
+                val name = call.parameters["name"]
+
+                if (name.isNullOrEmpty()) {
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@delete
+                } else if (taskRepository.deleteTask(name)) {
+                    call.respond(HttpStatusCode.NoContent)
+                } else {
+                    call.respond(HttpStatusCode.NotFound)
+                    return@delete
+                }
             }
         }
     }

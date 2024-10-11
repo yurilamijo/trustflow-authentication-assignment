@@ -1,52 +1,77 @@
 package com.example.route
 
-import com.example.plugins.ExposedUser
-import com.example.plugins.UserService
-import io.ktor.http.HttpStatusCode
-import io.ktor.server.request.receive
-import io.ktor.server.response.respond
-import io.ktor.server.routing.Routing
-import io.ktor.server.routing.delete
-import io.ktor.server.routing.get
-import io.ktor.server.routing.post
-import io.ktor.server.routing.put
-import io.ktor.server.routing.route
-import kotlin.text.toInt
+import com.example.model.JWTConfig
+import com.example.model.createToken
+import com.example.model.verify
+import com.example.plugins.name
+import com.example.repository.IUserRepository
+import io.ktor.http.*
+import io.ktor.server.auth.*
+import io.ktor.server.auth.jwt.*
+import io.ktor.server.request.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
+import kotlinx.serialization.Serializable
 
-fun Routing.userRoute() {
-//    val userService = UserService(database)
-//
-//    route("/user") {
-//        post {
-//            val user = call.receive<ExposedUser>()
-//            val id = userService.create(user)
-//            call.respond(HttpStatusCode.Created, id)
-//        }
-//
-//        // Read user
-//        get("/{id}") {
-//            val id = call.parameters["id"]?.toInt() ?: throw IllegalArgumentException("Invalid ID")
-//            val user = userService.read(id)
-//            if (user != null) {
-//                call.respond(HttpStatusCode.OK, user)
-//            } else {
-//                call.respond(HttpStatusCode.NotFound)
-//            }
-//        }
-//
-//        // Update user
-//        put("/{id}") {
-//            val id = call.parameters["id"]?.toInt() ?: throw IllegalArgumentException("Invalid ID")
-//            val user = call.receive<ExposedUser>()
-//            userService.update(id, user)
-//            call.respond(HttpStatusCode.OK)
-//        }
-//
-//        // Delete user
-//        delete("/{id}") {
-//            val id = call.parameters["id"]?.toInt() ?: throw IllegalArgumentException("Invalid ID")
-//            userService.delete(id)
-//            call.respond(HttpStatusCode.OK)
-//        }
-//    }
+@Serializable
+data class Login(val username: String, val password: String)
+
+@Serializable
+data class RefreshToken(val token: String)
+
+fun Routing.userRoute(jwtConfig: JWTConfig, userRepository: IUserRepository) {
+    post("/login") {
+        val login = call.receive<Login>()
+        val user = userRepository.getUserByUsername(login.username)
+
+        if (login.username == user?.username && login.password == user?.password) {
+            // Continue
+        } else {
+            call.respond(HttpStatusCode.Forbidden, "Login failed")
+            return@post
+        }
+
+        fun createToken(expirationSeconds: Long): String =
+            jwtConfig.createToken(user, expirationSeconds)
+
+        val accessToken = createToken(jwtConfig.expirationInSeconds.accessToken)
+        val refreshToken = createToken(jwtConfig.expirationInSeconds.refreshToken)
+        call.respond(
+            mapOf(
+                "accessToken" to accessToken,
+                "refreshToken" to refreshToken
+            )
+        )
+    }
+    post("/refresh") {
+        // Extract the refresh token from the request
+        val refreshToken = call.receive<RefreshToken>()
+
+        // Verify the refresh token and obtain the user
+        val user = jwtConfig.verify(refreshToken.token) ?: run {
+            call.respond(HttpStatusCode.Forbidden, "Invalid refresh token")
+            return@post
+        }
+
+        // Create new access and refresh tokens for the user
+        val newAccessToken = jwtConfig.createToken(user, jwtConfig.expirationInSeconds.accessToken)
+        val newRefreshToken = jwtConfig.createToken(user, jwtConfig.expirationInSeconds.refreshToken)
+
+        // Respond with the new tokens
+        call.respond(
+            mapOf(
+                "accessToken" to newAccessToken,
+                "refreshToken" to newRefreshToken
+            )
+        )
+    }
+    authenticate("auth-jwt") {
+        get("/hello") {
+            val principal = call.principal<JWTPrincipal>()
+            val username = principal!!.payload.getClaim("username").asString()
+            val expiresAt = principal.expiresAt?.time?.minus(System.currentTimeMillis())
+
+            call.respondText("Hello, $username! Token is expired at $expiresAt ms.")
+        }
+    }
 }

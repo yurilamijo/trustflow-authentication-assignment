@@ -1,7 +1,6 @@
 package com.example
 
 import com.example.plugins.*
-import com.example.repository.TaskRepository
 import io.ktor.server.application.*
 
 fun main(args: Array<String>) {
@@ -9,9 +8,11 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
+    val jwtConfig = environment.config.config("jwt").jwtConfig()
+
     configureDI()
-    configureSecurity()
+    configureSecurity(jwtConfig)
     configureSerialization()
     configureDatabases()
-    configureRouting()
+    configureRouting(jwtConfig)
 }
