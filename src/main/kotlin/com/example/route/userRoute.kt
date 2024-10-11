@@ -4,6 +4,7 @@ import com.example.extension.hashPassword
 import com.example.extension.verifyPassword
 import com.example.model.JWTConfig
 import com.example.model.User
+import com.example.model.UserAuth
 import com.example.model.createToken
 import com.example.model.verify
 import com.example.repository.IUserRepository
@@ -16,6 +17,9 @@ import io.ktor.server.routing.*
 import kotlinx.serialization.Serializable
 
 @Serializable
+data class Register(val firstName: String, val lastName: String, val username: String, val password: String)
+
+@Serializable
 data class Login(val username: String, val password: String)
 
 @Serializable
@@ -24,7 +28,7 @@ data class RefreshToken(val token: String)
 fun Routing.userRoute(jwtConfig: JWTConfig, userRepository: IUserRepository) {
     post("/login") {
         val (username, password) = call.receive<Login>()
-        val user = userRepository.getUserByUsername(username)
+        val user = userRepository.getUserAuthByUsername(username)
 
         if (user != null && verifyPassword(password, user.password)) {
             fun createToken(expirationSeconds: Long): String =
@@ -44,17 +48,21 @@ fun Routing.userRoute(jwtConfig: JWTConfig, userRepository: IUserRepository) {
         }
     }
     post("/register") {
-        var (username, password) = call.receive<Login>();
+        var (firstName, lastName, username, password) = call.receive<Register>();
 
-        if (userRepository.doesUserExistsByUsername(username)) {
+        if (userRepository.doesUserAuthExistsByUsername(username)) {
             call.respond(HttpStatusCode.BadRequest, "A user with the username: $username already exists")
         } else {
-            val user = User(
+            val user = User (
+                firstName = firstName,
+                lastName = lastName
+            )
+            val userAuth = UserAuth(
                 username = username,
                 password = hashPassword(password)
             )
 
-            userRepository.createUser(user)
+            userRepository.createUser(user, userAuth)
             call.respond(HttpStatusCode.Created, "User account created with username '$username'")
         }
     }
@@ -85,7 +93,5 @@ fun Routing.userRoute(jwtConfig: JWTConfig, userRepository: IUserRepository) {
             call.respondText("Hello, $username! Token is expired at $expiresAt ms.")
         }
     }
-
-
 }
 

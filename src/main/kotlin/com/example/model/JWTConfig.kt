@@ -18,16 +18,16 @@ data class JWTConfig(
     )
 }
 
-fun JWTConfig.createToken(user: User, expirationInSeconds: Long): String {
+fun JWTConfig.createToken(userAuth: UserAuth, expirationInSeconds: Long): String {
     return JWT.create()
         .withAudience(this.audience)
         .withIssuer(this.issuer)
-        .withClaim("name", user.username)
+        .withClaim("name", userAuth.username)
         .withExpiresAt(Date(System.currentTimeMillis() + 300000))
         .sign(Algorithm.HMAC256(this.secret))
 }
 
-fun JWTConfig.verify(token: String): User? =
+fun JWTConfig.verify(token: String): UserAuth? =
     try {
         val jwt = JWT.require(Algorithm.HMAC256(this.secret))
             .withAudience(this.audience)
@@ -35,7 +35,7 @@ fun JWTConfig.verify(token: String): User? =
             .build()
             .verify(token)
         jwt.getClaim("name").asString()?.let { name ->
-            User(name)
+            UserAuth(name)
         }
     } catch (e: JWTVerificationException) {
         null
