@@ -11,6 +11,7 @@ fun Application.module() {
     val jwtConfig = environment.config.config("jwt").jwtConfig()
 
     configureDI()
+    configureSession()
     configureSecurity(jwtConfig)
     configureSerialization()
     configureDatabases()

@@ -2,6 +2,8 @@ package com.example.route
 
 import com.example.model.Priority
 import com.example.model.Task
+import com.example.model.UserSession
+import com.example.plugins.requireSession
 import com.example.repository.ITaskRepository
 import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.JsonConvertException
@@ -15,16 +17,23 @@ import io.ktor.server.routing.post
 import io.ktor.server.routing.route
 import kotlin.text.isNullOrEmpty
 
+const val PARAMETER_NAME = "name"
+const val PARAMETER_PRIORITY = "priority"
+
 fun Routing.taskRoute(taskRepository: ITaskRepository) {
     authenticate("auth-jwt") {
         route("/tasks") {
             get {
+                call.requireSession()
+
                 val tasks = taskRepository.getAllTask()
                 call.respond(tasks)
             }
 
             get("/byName/{name}") {
-                val nameAsString = call.pathParameters["name"].takeIf { it.isNullOrEmpty() == false }
+                call.requireSession()
+
+                val nameAsString = call.pathParameters[PARAMETER_NAME].takeIf { it.isNullOrEmpty() == false }
                     ?: return@get call.respond(
                         HttpStatusCode.BadRequest
                     )
@@ -36,7 +45,9 @@ fun Routing.taskRoute(taskRepository: ITaskRepository) {
             }
 
             get("/byPriority/{priority}") {
-                val priorityAsString = call.pathParameters["priority"]
+                call.requireSession()
+
+                val priorityAsString = call.pathParameters[PARAMETER_PRIORITY]
 
                 if (priorityAsString.isNullOrEmpty()) {
                     call.respond(HttpStatusCode.BadRequest)
@@ -58,6 +69,8 @@ fun Routing.taskRoute(taskRepository: ITaskRepository) {
             }
 
             post {
+                call.requireSession()
+
                 try {
                     val task = call.receive<Task>()
                     taskRepository.createTask(task)
@@ -71,7 +84,9 @@ fun Routing.taskRoute(taskRepository: ITaskRepository) {
             }
 
             delete("/{name}") {
-                val name = call.parameters["name"]
+                call.requireSession()
+
+                val name = call.parameters[PARAMETER_NAME]
 
                 if (name.isNullOrEmpty()) {
                     call.respond(HttpStatusCode.BadRequest)

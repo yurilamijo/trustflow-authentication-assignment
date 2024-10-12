@@ -11,7 +11,6 @@ import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.koin.ktor.ext.get
-import java.time.Clock
 
 fun Application.configureRouting(
     jwtConfig: JWTConfig,

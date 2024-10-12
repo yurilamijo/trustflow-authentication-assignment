@@ -2,16 +2,13 @@ package com.example.repository
 
 import com.example.database.UserAuthDAO
 import com.example.database.UserAuthTable
-import com.example.database.UserDAO
 import com.example.database.UserTable
 import com.example.database.userAuthDAOToUserAuth
-import com.example.database.userDAOToUser
 import com.example.model.User
 import com.example.model.UserAuth
 import com.example.plugins.dbQuery
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.insertAndGetId
-import kotlin.Int
 
 class UserRepository : IUserRepository {
     override suspend fun getUserAuthByUsername(username: String): UserAuth? {

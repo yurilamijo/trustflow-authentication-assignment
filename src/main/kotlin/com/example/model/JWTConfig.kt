@@ -5,6 +5,8 @@ import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTVerificationException
 import java.util.Date
 
+const val JWT_CLAIM_NAME = "name"
+
 data class JWTConfig(
     val audience: String,
     val issuer: String,
@@ -22,7 +24,7 @@ fun JWTConfig.createToken(userAuth: UserAuth, expirationInSeconds: Long): String
     return JWT.create()
         .withAudience(this.audience)
         .withIssuer(this.issuer)
-        .withClaim("name", userAuth.username)
+        .withClaim(JWT_CLAIM_NAME, userAuth.username)
         .withExpiresAt(Date(System.currentTimeMillis() + 300000))
         .sign(Algorithm.HMAC256(this.secret))
 }
@@ -34,7 +36,7 @@ fun JWTConfig.verify(token: String): UserAuth? =
             .withIssuer(this.issuer)
             .build()
             .verify(token)
-        jwt.getClaim("name").asString()?.let { name ->
+        jwt.getClaim(JWT_CLAIM_NAME).asString()?.let { name ->
             UserAuth(name)
         }
     } catch (e: JWTVerificationException) {

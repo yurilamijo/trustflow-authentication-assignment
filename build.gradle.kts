@@ -61,4 +61,8 @@ dependencies {
 
     // Hashing
     implementation("org.mindrot:jbcrypt:0.3m")
+
+    // Sessions
+    implementation("io.ktor:ktor-server-sessions:$ktor_version")
+    implementation("io.ktor:ktor-server-auth:$ktor_version")
 }
