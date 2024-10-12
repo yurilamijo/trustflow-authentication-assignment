@@ -30,10 +30,7 @@ fun Routing.userRoute(jwtConfig: JWTConfig, userRepository: IUserRepository) {
         val user = userRepository.getUserAuthByUsername(username)
 
         if (user != null && verifyPassword(password, user.password)) {
-            fun createToken(expirationSeconds: Long): String =
-                jwtConfig.createToken(user, expirationSeconds)
-
-            val accessToken = createToken(jwtConfig.expirationInSeconds.accessToken)
+            val accessToken = jwtConfig.createToken(user)
 
             call.sessions.set(UserSession(accessToken))
             call.respond(

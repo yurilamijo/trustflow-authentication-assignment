@@ -8,11 +8,18 @@ import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.javatime.date
 
-object UserTable : IntIdTable("user") {
-    val firstName = varchar("firstName", 50)
-    val lastName = varchar("lastName", 50)
-    val email = varchar("email", 100).nullable()
-    val dateOfBirth = date("dateOfBirth").nullable()
+const val TABLE_USER_NAME = "user"
+const val TABLE_USER_COLUMN_FIRSTNAME = "firstName"
+const val TABLE_USER_COLUMN_LASTNAME = "lastName"
+const val TABLE_USER_COLUMN_EMAIL = "email"
+const val TABLE_USER_COLUMN_DATE_OF_BIRTH = "dateOfBirth"
+const val COLUMN_VARCHAR_LENGTH_100 = 100
+
+object UserTable : IntIdTable(TABLE_USER_NAME) {
+    val firstName = varchar(TABLE_USER_COLUMN_FIRSTNAME, COLUMN_VARCHAR_LENGTH_50)
+    val lastName = varchar(TABLE_USER_COLUMN_LASTNAME, COLUMN_VARCHAR_LENGTH_50)
+    val email = varchar(TABLE_USER_COLUMN_EMAIL, COLUMN_VARCHAR_LENGTH_100).nullable()
+    val dateOfBirth = date(TABLE_USER_COLUMN_DATE_OF_BIRTH).nullable()
 }
 
 class UserDAO(id: EntityID<Int>) : IntEntity(id) {

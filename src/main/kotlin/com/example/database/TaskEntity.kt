@@ -7,10 +7,16 @@ import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 
-object TaskTable : IntIdTable("task") {
-    val name = varchar("name", 50)
-    val description = varchar("description", 50)
-    val priority = varchar("priority", 50)
+const val TABLE_TASK_NAME = "task"
+const val TABLE_TASK_COLUMN_NAME = "name"
+const val TABLE_TASK_COLUMN_DESCRIPTION = "description"
+const val TABLE_TASK_COLUMN_PRIORITY = "priority"
+const val COLUMN_VARCHAR_LENGTH_50 = 50
+
+object TaskTable : IntIdTable(TABLE_TASK_NAME) {
+    val name = varchar(TABLE_TASK_COLUMN_NAME, COLUMN_VARCHAR_LENGTH_50)
+    val description = varchar(TABLE_TASK_COLUMN_DESCRIPTION, COLUMN_VARCHAR_LENGTH_50)
+    val priority = varchar(TABLE_TASK_COLUMN_PRIORITY, COLUMN_VARCHAR_LENGTH_50)
 }
 
 class TaskDAO(id: EntityID<Int>) : IntEntity(id) {
