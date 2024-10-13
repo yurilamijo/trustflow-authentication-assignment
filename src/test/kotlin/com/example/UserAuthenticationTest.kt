@@ -31,6 +31,16 @@ import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 
+const val RESPONSE_FIELD_ACCESS_TOKEN = "accessToken"
+
+const val TEST_VALUE_USER_ID = 1
+const val TEST_VALUE_USERNAME = "yurilamijo"
+const val TEST_VALUE_PASSWORD = "PasswordYuri"
+const val TEST_VALUE_FIRSTNAME = "Yuri"
+const val TEST_VALUE_LASTNAME = "Lamijo"
+const val TEST_VALUE_EMAIL = "yuri@test.nl"
+const val TEST_VALUE_DATE_OF_BIRTH = "1999-04-08"
+
 class UserAuthenticationTest {
     val fakeTaskRepository = FakeTaskRepository()
     val fakeUserRepository = FakeUserRepository()
@@ -62,10 +72,10 @@ class UserAuthenticationTest {
 
         val response = client.post("/login") {
             contentType(ContentType.Application.Json)
-            setBody(UserLogin("yurilamijo", "PasswordYuri"))
+            setBody(UserLogin(TEST_VALUE_USERNAME, TEST_VALUE_PASSWORD))
         }
         assertEquals(HttpStatusCode.OK, response.status)
-        assertContains(response.bodyAsText(), "accessToken")
+        assertContains(response.bodyAsText(), RESPONSE_FIELD_ACCESS_TOKEN)
     }
 
     @Test
@@ -102,7 +112,7 @@ class UserAuthenticationTest {
             }
         }
 
-        val userAuth = UserAuth(username = "yurilamijo", password = "PasswordYuri")
+        val userAuth = UserAuth(username = TEST_VALUE_USERNAME, password = TEST_VALUE_PASSWORD)
         val accessToken = JWTConfig.createToken(userAuth)
 
         println("Generated Access Token: $accessToken") // Debug: Log the token
@@ -111,7 +121,15 @@ class UserAuthenticationTest {
             headers {
                 append(HttpHeaders.Authorization, "Bearer $accessToken")
                 contentType(ContentType.Application.Json)
-                setBody(User(1, "yuri", "lamijo", "yuri@hotmail.com", LocalDate.parse("1999-08-04")))
+                setBody(
+                    User(
+                        TEST_VALUE_USER_ID,
+                        TEST_VALUE_FIRSTNAME,
+                        TEST_VALUE_LASTNAME,
+                        TEST_VALUE_EMAIL,
+                        LocalDate.parse(TEST_VALUE_DATE_OF_BIRTH)
+                    )
+                )
             }
         }
         assertEquals(HttpStatusCode.OK, response.status)

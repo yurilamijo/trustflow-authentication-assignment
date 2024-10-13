@@ -18,6 +18,10 @@ import io.ktor.server.testing.*
 import org.koin.core.context.stopKoin
 import kotlin.test.*
 
+const val TEST_VALUE_TASK_COOKING = "Cooking"
+const val TEST_VALUE_TASK_CLEANING = "Cleaning"
+const val TEST_VALUE_TASK_PADEL = "Padel"
+
 class TaskTest {
     val fakeTaskRepository = FakeTaskRepository()
 
@@ -50,7 +54,7 @@ class TaskTest {
         assertEquals(HttpStatusCode.OK, response.status)
 
         val responseBody = response.body<List<Task>>()
-        val expectedTaskNames = listOf("Cooking", "Cleaning")
+        val expectedTaskNames = listOf(TEST_VALUE_TASK_COOKING, TEST_VALUE_TASK_CLEANING)
         val actualTaskNames = responseBody.map(Task::name)
         assertContentEquals(expectedTaskNames, actualTaskNames)
     }
@@ -109,6 +113,6 @@ class TaskTest {
             .body<List<Task>>()
             .map { it.name }
 
-        assertContains(taskNames, "Padel")
+        assertContains(taskNames, TEST_VALUE_TASK_PADEL)
     }
 }

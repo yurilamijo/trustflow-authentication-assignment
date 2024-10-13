@@ -7,6 +7,10 @@ import io.ktor.server.config.ApplicationConfig
 import java.util.Date
 
 const val JWT_CLAIM_USERNAME = "username"
+const val CONFIG_PROPERTY_JWT_AUDIENCE = "jwt.audience"
+const val CONFIG_PROPERTY_JWT_ISSUER = "jwt.issuer"
+const val CONFIG_PROPERTY_JWT_REALM = "jwt.realm"
+const val CONFIG_PROPERTY_JWT_SECRET = "jwt.secret"
 
 object JWTConfig {
     lateinit var audience: String
@@ -15,10 +19,10 @@ object JWTConfig {
     lateinit var secret: String
 
     fun init(config: ApplicationConfig) {
-        this.audience = config.property("jwt.audience").getString()
-        this.issuer = config.property("jwt.issuer").getString()
-        this.realm = config.property("jwt.realm").getString()
-        this.secret = config.property("jwt.secret").getString()
+        this.audience = config.property(CONFIG_PROPERTY_JWT_AUDIENCE).getString()
+        this.issuer = config.property(CONFIG_PROPERTY_JWT_ISSUER).getString()
+        this.realm = config.property(CONFIG_PROPERTY_JWT_REALM).getString()
+        this.secret = config.property(CONFIG_PROPERTY_JWT_SECRET).getString()
     }
 
     fun init(audience: String, issuer: String, realm: String, secret: String) {

@@ -5,6 +5,7 @@ import com.example.model.Task
 import com.example.repository.ITaskRepository
 import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.JsonConvertException
+import io.ktor.server.auth.authenticate
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Routing
@@ -58,30 +59,32 @@ fun Routing.taskRoute(taskRepository: ITaskRepository) {
             }
         }
 
-        post {
-            try {
-                val task = call.receive<Task>()
-                taskRepository.createTask(task)
-                call.respond(HttpStatusCode.Created, task)
-            } catch (ex: Exception) {
-                when (ex) {
-                    is IllegalStateException, is JsonConvertException -> call.respond(HttpStatusCode.BadRequest)
-                    else -> throw ex
+        authenticate("jwt-auth") {
+            post {
+                try {
+                    val task = call.receive<Task>()
+                    taskRepository.createTask(task)
+                    call.respond(HttpStatusCode.Created, task)
+                } catch (ex: Exception) {
+                    when (ex) {
+                        is IllegalStateException, is JsonConvertException -> call.respond(HttpStatusCode.BadRequest)
+                        else -> throw ex
+                    }
                 }
             }
-        }
 
-        delete("/{name}") {
-            val name = call.parameters[PARAMETER_NAME]
+            delete("/{name}") {
+                val name = call.parameters[PARAMETER_NAME]
 
-            if (name.isNullOrEmpty()) {
-                call.respond(HttpStatusCode.BadRequest)
-                return@delete
-            } else if (taskRepository.deleteTask(name)) {
-                call.respond(HttpStatusCode.NoContent)
-            } else {
-                call.respond(HttpStatusCode.NotFound)
-                return@delete
+                if (name.isNullOrEmpty()) {
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@delete
+                } else if (taskRepository.deleteTask(name)) {
+                    call.respond(HttpStatusCode.NoContent)
+                } else {
+                    call.respond(HttpStatusCode.NotFound)
+                    return@delete
+                }
             }
         }
     }
