@@ -2,8 +2,11 @@ package com.example
 
 import com.example.enum.Priority
 import com.example.model.Task
+import com.example.plugins.configureDI
 import com.example.plugins.configureRouting
+import com.example.plugins.configureSecurity
 import com.example.plugins.configureSerialization
+import com.example.plugins.configureSession
 import com.example.repository.FakeTaskRepository
 import io.ktor.client.call.body
 import io.ktor.client.request.*
@@ -13,13 +16,16 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.testing.*
 import kotlin.test.*
 
-class ApplicationTest {
+class TaskTest {
+    val taskRepository = FakeTaskRepository()
+
     @Test
     fun `Test Task filter by priority is successful`() = testApplication {
         application {
-            val taskRepository = FakeTaskRepository()
-
+            configureDI()
             configureSerialization()
+            configureSession()
+            configureSecurity()
             configureRouting(taskRepository)
         }
         val client = createClient {
@@ -57,8 +63,6 @@ class ApplicationTest {
     @Test
     fun `Test Task creation`() = testApplication {
         application {
-            val taskRepository = FakeTaskRepository()
-
             configureSerialization()
             configureRouting(taskRepository)
         }

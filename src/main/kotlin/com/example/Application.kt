@@ -1,5 +1,6 @@
 package com.example
 
+import com.example.model.JWTConfig
 import com.example.plugins.*
 import io.ktor.server.application.*
 
@@ -8,6 +9,9 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
+    val config = environment.config
+    JWTConfig.init(config)
+
     configureDI()
     configureSession()
     configureSecurity()

@@ -12,7 +12,7 @@ import io.ktor.server.response.*
 
 fun Application.configureSecurity() {
     authentication {
-        jwt("auth-jwt") {
+        jwt() {
             realm = JWTConfig.realm
             verifier(
                 JWT
@@ -22,7 +22,11 @@ fun Application.configureSecurity() {
                     .build()
             )
             validate { credential ->
-                if (credential.payload.audience.contains(JWTConfig.audience)) JWTPrincipal(credential.payload) else null
+                if (credential.payload.audience.contains(JWTConfig.audience)) {
+                    JWTPrincipal(credential.payload)
+                } else {
+                    null
+                }
             }
             challenge { scheme, realm ->
                 call.respond(

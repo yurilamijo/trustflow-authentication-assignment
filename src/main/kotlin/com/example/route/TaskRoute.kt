@@ -21,7 +21,7 @@ const val PARAMETER_NAME = "name"
 const val PARAMETER_PRIORITY = "priority"
 
 fun Routing.taskRoute(taskRepository: ITaskRepository) {
-    authenticate("auth-jwt") {
+    authenticate() {
         route("/tasks") {
             get {
                 call.requireSession()
