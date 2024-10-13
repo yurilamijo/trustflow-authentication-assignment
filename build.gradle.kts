@@ -65,4 +65,6 @@ dependencies {
     // Sessions
     implementation("io.ktor:ktor-server-sessions:$ktor_version")
     implementation("io.ktor:ktor-server-auth:$ktor_version")
+
+    testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
 }

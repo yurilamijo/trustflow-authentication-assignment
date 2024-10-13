@@ -39,20 +39,3 @@ object JWTConfig {
 }
 
 fun JWTPrincipal.name(): String? = this.payload.getClaim(JWT_CLAIM_USERNAME).asString()
-
-//@Serializable
-//data class ApplicationConfigJWT(
-//    val audience: String,
-//    val issuer: String,
-//    val realm: String,
-//    val secret: String,
-//)
-//
-//fun ApplicationConfig.ApplicationConfigJWT(): ApplicationConfigJWT {
-//    return ApplicationConfigJWT(
-//        audience = property("audience").getString(),
-//        issuer = property("issuer").getString(),
-//        realm = property("realm").getString(),
-//        secret = property("secret").getString(),
-//    )
-//}

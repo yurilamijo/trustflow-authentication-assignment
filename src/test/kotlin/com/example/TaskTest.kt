@@ -1,6 +1,7 @@
 package com.example
 
 import com.example.enum.Priority
+import com.example.model.JWTConfig
 import com.example.model.Task
 import com.example.plugins.configureDI
 import com.example.plugins.configureRouting
@@ -14,10 +15,21 @@ import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.testing.*
+import org.koin.core.context.stopKoin
 import kotlin.test.*
 
 class TaskTest {
-    val taskRepository = FakeTaskRepository()
+    val fakeTaskRepository = FakeTaskRepository()
+
+    @BeforeTest
+    fun startUp() {
+        JWTConfig.init("jwt-audience", "jwt-issuer", "ktor sample app", "test-secret-123")
+    }
+
+    @AfterTest
+    fun tearDown() {
+        stopKoin()
+    }
 
     @Test
     fun `Test Task filter by priority is successful`() = testApplication {
@@ -26,9 +38,9 @@ class TaskTest {
             configureSerialization()
             configureSession()
             configureSecurity()
-            configureRouting(taskRepository)
+            configureRouting(fakeTaskRepository)
         }
-        val client = createClient {
+        var client = createClient {
             install(ContentNegotiation) {
                 json()
             }
@@ -46,7 +58,11 @@ class TaskTest {
     @Test
     fun `Test Task filter with invalid priority fails`() = testApplication {
         application {
-            module()
+            configureDI()
+            configureSerialization()
+            configureSession()
+            configureSecurity()
+            configureRouting(fakeTaskRepository)
         }
 
         val response = client.get("/tasks/byPriority/Invalid")
@@ -63,8 +79,11 @@ class TaskTest {
     @Test
     fun `Test Task creation`() = testApplication {
         application {
+            configureDI()
             configureSerialization()
-            configureRouting(taskRepository)
+            configureSession()
+            configureSecurity()
+            configureRouting(fakeTaskRepository)
         }
         val client = createClient {
             install(ContentNegotiation) {

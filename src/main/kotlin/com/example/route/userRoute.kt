@@ -66,7 +66,7 @@ fun Routing.userRoute(userRepository: IUserRepository) {
             call.respond(HttpStatusCode.Created, "User account created with username '$username'")
         }
     }
-    authenticate() {
+    authenticate("jwt-auth") {
         get("/logout") {
             call.requireSession()
 
