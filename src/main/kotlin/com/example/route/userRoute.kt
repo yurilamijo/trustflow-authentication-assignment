@@ -17,6 +17,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.sessions.clear
+import io.ktor.server.sessions.get
 import io.ktor.server.sessions.sessions
 import io.ktor.server.sessions.set
 import kotlinx.serialization.Serializable
@@ -32,7 +33,7 @@ fun Routing.userRoute(jwtConfig: JWTConfig, userRepository: IUserRepository) {
         if (userAuth != null && verifyPassword(password, userAuth.password)) {
             val accessToken = jwtConfig.createToken(userAuth)
 
-            call.sessions.set(UserSession(accessToken))
+            call.sessions.set(UserSession(userAuth.userId, accessToken))
             call.respond(
                 HttpStatusCode.OK,
                 mapOf(
@@ -75,6 +76,8 @@ fun Routing.userRoute(jwtConfig: JWTConfig, userRepository: IUserRepository) {
         }
 
         put("/update/{id}") {
+            call.requireSession()
+
             val user = call.receive<User>()
             var id = call.parameters["id"]
 
@@ -88,6 +91,9 @@ fun Routing.userRoute(jwtConfig: JWTConfig, userRepository: IUserRepository) {
         }
 
         delete("/delete/{id}") {
+            call.requireSession()
+            var session = call.sessions.get<UserSession>()
+
             var id = call.parameters["id"]
 
             if (id.isNullOrEmpty()) {
