@@ -37,7 +37,7 @@ fun JWTConfig.verify(token: String): UserAuth? =
             .build()
             .verify(token)
         jwt.getClaim(JWT_CLAIM_USERNAME).asString()?.let { name ->
-            UserAuth(name)
+            UserAuth(username = name)
         }
     } catch (e: JWTVerificationException) {
         null

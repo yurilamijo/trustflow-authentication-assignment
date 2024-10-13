@@ -1,6 +1,7 @@
 package com.example.database
 
 import com.example.model.User
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
@@ -32,7 +33,6 @@ class UserDAO(id: EntityID<Int>) : IntEntity(id) {
 }
 
 fun userDAOToUser(dao: UserDAO): User {
-    val dateOfBirth: LocalDateTime? =
-        if (dao.dateOfBirth == null) null else LocalDateTime.parse(dao.dateOfBirth.toString())
-    return User(dao.firstName, dao.lastName, dao.email, dateOfBirth)
+    val dateOfBirth: LocalDate? = if (dao.dateOfBirth == null) null else LocalDate.parse(dao.dateOfBirth.toString())
+    return User(dao.id.value, dao.firstName, dao.lastName, dao.email, dateOfBirth)
 }

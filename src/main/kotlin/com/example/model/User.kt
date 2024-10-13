@@ -1,12 +1,13 @@
 package com.example.model
 
-import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class User(
+    val id: Int?,
     val firstName: String,
     val lastName: String,
-    val email: String? = null,
-    val dateOfBirth: LocalDateTime? = null
+    val email: String?,
+    val dateOfBirth: LocalDate?
 )

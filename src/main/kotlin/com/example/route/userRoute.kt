@@ -27,10 +27,10 @@ data class RefreshToken(val token: String)
 fun Routing.userRoute(jwtConfig: JWTConfig, userRepository: IUserRepository) {
     post("/login") {
         val (username, password) = call.receive<UserLogin>()
-        val user = userRepository.getUserAuthByUsername(username)
+        val userAuth = userRepository.getUserAuthByUsername(username)
 
-        if (user != null && verifyPassword(password, user.password)) {
-            val accessToken = jwtConfig.createToken(user)
+        if (userAuth != null && verifyPassword(password, userAuth.password)) {
+            val accessToken = jwtConfig.createToken(userAuth)
 
             call.sessions.set(UserSession(accessToken))
             call.respond(
@@ -51,8 +51,11 @@ fun Routing.userRoute(jwtConfig: JWTConfig, userRepository: IUserRepository) {
             call.respond(HttpStatusCode.BadRequest, "A user with the username: $username already exists")
         } else {
             val user = User(
+                id = null,
                 firstName = firstName,
-                lastName = lastName
+                lastName = lastName,
+                email = null,
+                dateOfBirth = null
             )
             val userAuth = UserAuth(
                 username = username,
@@ -69,6 +72,19 @@ fun Routing.userRoute(jwtConfig: JWTConfig, userRepository: IUserRepository) {
 
             call.sessions.clear<UserSession>()
             call.respond(HttpStatusCode.OK, "Logged out successfully")
+        }
+
+        put("/update/{id}") {
+            val user = call.receive<User>()
+            var id = call.parameters["id"]
+
+            if (id.isNullOrEmpty()) {
+                call.respond(HttpStatusCode.BadRequest, "Failed to update user")
+                return@put
+            } else {
+                var updatedUser = userRepository.updateUser(id.toInt(), user)
+                call.respond(HttpStatusCode.OK, updatedUser)
+            }
         }
     }
 }

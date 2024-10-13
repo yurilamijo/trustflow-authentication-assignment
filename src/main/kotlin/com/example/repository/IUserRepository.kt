@@ -8,5 +8,6 @@ interface IUserRepository {
     suspend fun doesUserAuthExistsByUsername(username: String): Boolean
     suspend fun createUser(user: User, userAuth: UserAuth): User
     suspend fun deleteUser(name: String): Boolean
-    suspend fun updateUser(user:User): User
+    suspend fun updateUser(id: Int, user: User): User
+    suspend fun getUserById(id: Int): User
 }

@@ -27,5 +27,5 @@ class UserAuthDAO(id: EntityID<Int>) : IntEntity(id) {
 }
 
 fun userAuthDAOToUserAuth(dao: UserAuthDAO): UserAuth {
-    return UserAuth(dao.username, dao.password)
+    return UserAuth(dao.userId, dao.username, dao.password)
 }
