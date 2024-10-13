@@ -1,6 +1,5 @@
 package com.example.plugins
 
-import com.example.model.JWTConfig
 import com.example.repository.ITaskRepository
 import com.example.repository.IUserRepository
 import com.example.route.taskRoute
@@ -13,7 +12,6 @@ import io.ktor.server.routing.*
 import org.koin.ktor.ext.get
 
 fun Application.configureRouting(
-    jwtConfig: JWTConfig,
     taskRepository: ITaskRepository = get(),
     userRepository: IUserRepository = get()
 ) {
@@ -25,6 +23,6 @@ fun Application.configureRouting(
 
     routing {
         taskRoute(taskRepository)
-        userRoute(jwtConfig, userRepository)
+        userRoute(userRepository)
     }
 }

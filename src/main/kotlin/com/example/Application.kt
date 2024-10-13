@@ -8,12 +8,10 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
-    val jwtConfig = environment.config.config("jwt").jwtConfig()
-
     configureDI()
     configureSession()
-    configureSecurity(jwtConfig)
+    configureSecurity()
     configureSerialization()
     configureDatabases()
-    configureRouting(jwtConfig)
+    configureRouting()
 }

@@ -4,7 +4,7 @@ import com.example.enum.Priority
 import com.example.model.Task
 
 class FakeTaskRepository : ITaskRepository {
-    private val tasks = mutableListOf<Task>(
+    private val allTask = mutableListOf<Task>(
         Task("Coding", "Coding a project", Priority.Vital),
         Task("Bouldering", "Time to go bouldering", Priority.Low),
         Task("Cooking", "Cooking a meal", Priority.Medium),
@@ -12,20 +12,20 @@ class FakeTaskRepository : ITaskRepository {
     )
 
     override suspend fun getAllTask(): List<Task> {
-        return tasks
+        return allTask
     }
 
     override suspend fun getAllTaskByPriority(priority: Priority): List<Task> {
-        return tasks.filter { it.priority == priority }
+        return allTask.filter { it.priority == priority }
     }
 
     override suspend fun getTaskByName(name: String): Task? {
-        return tasks.find { it.name.equals(name, ignoreCase = true) }
+        return allTask.find { it.name.equals(name, ignoreCase = true) }
     }
 
     override suspend fun createTask(task: Task): Task {
         if (getTaskByName(task.name) == null) {
-            tasks.add(task)
+            allTask.add(task)
 
             return task
         } else {
@@ -34,6 +34,6 @@ class FakeTaskRepository : ITaskRepository {
     }
 
     override suspend fun deleteTask(name: String): Boolean {
-        return tasks.removeIf { it.name == name }
+        return allTask.removeIf { it.name == name }
     }
 }

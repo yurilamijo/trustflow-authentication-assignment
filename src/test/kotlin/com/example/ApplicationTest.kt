@@ -4,7 +4,6 @@ import com.example.enum.Priority
 import com.example.model.Task
 import com.example.plugins.configureRouting
 import com.example.plugins.configureSerialization
-import com.example.plugins.jwtConfig
 import com.example.repository.FakeTaskRepository
 import io.ktor.client.call.body
 import io.ktor.client.request.*
@@ -19,10 +18,9 @@ class ApplicationTest {
     fun `Test Task filter by priority is successful`() = testApplication {
         application {
             val taskRepository = FakeTaskRepository()
-            val jwtConfig = environment.config.config("jwt").jwtConfig()
 
             configureSerialization()
-            configureRouting(jwtConfig, taskRepository)
+            configureRouting(taskRepository)
         }
         val client = createClient {
             install(ContentNegotiation) {
@@ -60,10 +58,9 @@ class ApplicationTest {
     fun `Test Task creation`() = testApplication {
         application {
             val taskRepository = FakeTaskRepository()
-            val jwtConfig = environment.config.config("jwt").jwtConfig()
 
             configureSerialization()
-            configureRouting(jwtConfig, taskRepository)
+            configureRouting(taskRepository)
         }
         val client = createClient {
             install(ContentNegotiation) {

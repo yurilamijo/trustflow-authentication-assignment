@@ -8,7 +8,6 @@ import com.example.model.UserAuth
 import com.example.model.UserLogin
 import com.example.model.UserRegister
 import com.example.model.UserSession
-import com.example.model.createToken
 import com.example.plugins.requireSession
 import com.example.repository.IUserRepository
 import io.ktor.http.*
@@ -25,13 +24,13 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class RefreshToken(val token: String)
 
-fun Routing.userRoute(jwtConfig: JWTConfig, userRepository: IUserRepository) {
+fun Routing.userRoute(userRepository: IUserRepository) {
     post("/login") {
         val (username, password) = call.receive<UserLogin>()
         val userAuth = userRepository.getUserAuthByUsername(username)
 
         if (userAuth != null && verifyPassword(password, userAuth.password)) {
-            val accessToken = jwtConfig.createToken(userAuth)
+            val accessToken = JWTConfig.createToken(userAuth)
 
             call.sessions.set(UserSession(userAuth.userId, accessToken))
             call.respond(

@@ -8,23 +8,21 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
-import io.ktor.server.config.ApplicationConfig
 import io.ktor.server.response.*
-import java.time.Clock
 
-fun Application.configureSecurity(jwtConfig: JWTConfig) {
+fun Application.configureSecurity() {
     authentication {
         jwt("auth-jwt") {
-            realm = jwtConfig.realm
+            realm = JWTConfig.realm
             verifier(
                 JWT
-                    .require(Algorithm.HMAC256(jwtConfig.secret))
-                    .withAudience(jwtConfig.audience)
-                    .withIssuer(jwtConfig.issuer)
+                    .require(Algorithm.HMAC256(JWTConfig.secret))
+                    .withAudience(JWTConfig.audience)
+                    .withIssuer(JWTConfig.issuer)
                     .build()
             )
             validate { credential ->
-                if (credential.payload.audience.contains(jwtConfig.audience)) JWTPrincipal(credential.payload) else null
+                if (credential.payload.audience.contains(JWTConfig.audience)) JWTPrincipal(credential.payload) else null
             }
             challenge { scheme, realm ->
                 call.respond(
@@ -35,20 +33,3 @@ fun Application.configureSecurity(jwtConfig: JWTConfig) {
         }
     }
 }
-
-fun ApplicationConfig.jwtConfig(): JWTConfig {
-    return JWTConfig(
-        audience = property("audience").getString(),
-        issuer = property("issuer").getString(),
-        realm = property("realm").getString(),
-        secret = property("secret").getString(),
-        expirationInSeconds = JWTConfig.ExpirationInSecondsConfig(
-            accessToken = property("expirationInSeconds.accessToken").getString().toLong(),
-            refreshToken = property("expirationInSeconds.refreshToken").getString().toLong()
-        )
-    )
-}
-
-//fun JWTPrincipal.role(): String? = this.payload.getClaim("role").asString()
-fun JWTPrincipal.name(): String? = this.payload.getClaim("name").asString()
-fun JWTPrincipal.ttl(clock: Clock): Long? = this.payload.expiresAt?.time?.minus(clock.millis())
