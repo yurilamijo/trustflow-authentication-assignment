@@ -5,7 +5,8 @@ import com.example.model.UserAuth
 
 interface IUserRepository {
     suspend fun getUserAuthByUsername(username: String): UserAuth?
+    suspend fun doesUserAuthExistsByUsername(username: String): Boolean
     suspend fun createUser(user: User, userAuth: UserAuth): User
     suspend fun deleteUser(name: String): Boolean
-    suspend fun doesUserAuthExistsByUsername(username: String): Boolean
+    suspend fun updateUser(user:User): User
 }

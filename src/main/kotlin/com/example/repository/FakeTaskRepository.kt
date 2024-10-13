@@ -1,6 +1,6 @@
 package com.example.repository
 
-import com.example.model.Priority
+import com.example.enum.Priority
 import com.example.model.Task
 
 class FakeTaskRepository : ITaskRepository {

@@ -1,6 +1,6 @@
 package com.example.route
 
-import com.example.model.Priority
+import com.example.enum.Priority
 import com.example.model.Task
 import com.example.model.UserSession
 import com.example.plugins.requireSession

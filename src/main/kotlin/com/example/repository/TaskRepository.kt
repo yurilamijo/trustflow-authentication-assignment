@@ -3,7 +3,7 @@ package com.example.repository
 import com.example.database.TaskDAO
 import com.example.database.TaskTable
 import com.example.database.taskDAOToTask
-import com.example.model.Priority
+import com.example.enum.Priority
 import com.example.model.Task
 import com.example.plugins.dbQuery
 import org.jetbrains.exposed.sql.deleteWhere

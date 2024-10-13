@@ -41,6 +41,10 @@ class UserRepository : IUserRepository {
         TODO("Not yet implemented")
     }
 
+    override suspend fun updateUser(user: User): User {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun doesUserAuthExistsByUsername(username: String): Boolean {
         return this.getUserAuthByUsername(username) is UserAuth
     }
