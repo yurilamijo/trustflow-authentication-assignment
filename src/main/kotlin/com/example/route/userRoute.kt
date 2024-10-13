@@ -86,6 +86,18 @@ fun Routing.userRoute(jwtConfig: JWTConfig, userRepository: IUserRepository) {
                 call.respond(HttpStatusCode.OK, updatedUser)
             }
         }
+
+        delete("/delete/{id}") {
+            var id = call.parameters["id"]
+
+            if (id.isNullOrEmpty()) {
+                call.respond(HttpStatusCode.BadRequest, "Failed to delete user")
+                return@delete
+            } else {
+                var updatedUser = userRepository.deleteUser(id.toInt())
+                call.respond(HttpStatusCode.OK, "User with id: '$id' has been successfully deleted")
+            }
+        }
     }
 }
 

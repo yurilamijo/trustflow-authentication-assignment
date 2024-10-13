@@ -9,9 +9,11 @@ import com.example.database.userDAOToUser
 import com.example.model.User
 import com.example.model.UserAuth
 import com.example.plugins.dbQuery
+import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.update
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import java.time.LocalDate
 
 class UserRepository : IUserRepository {
@@ -53,8 +55,13 @@ class UserRepository : IUserRepository {
         return user
     }
 
-    override suspend fun deleteUser(name: String): Boolean {
-        TODO("Not yet implemented")
+    override suspend fun deleteUser(id: Int): Boolean {
+        dbQuery {
+            UserAuthTable.deleteWhere { UserAuthTable.userId eq id }
+            UserTable.deleteWhere { UserTable.id eq id }
+        }
+
+        return true
     }
 
     override suspend fun updateUser(id: Int, user: User): User {
