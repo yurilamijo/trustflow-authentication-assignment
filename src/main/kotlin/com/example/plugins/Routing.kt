@@ -3,6 +3,7 @@ package com.example.plugins
 import com.example.repository.ITaskRepository
 import com.example.repository.IUserRepository
 import com.example.route.taskRoute
+import com.example.route.userAuthRoute
 import com.example.route.userRoute
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -23,6 +24,7 @@ fun Application.configureRouting(
 
     routing {
         taskRoute(taskRepository)
+        userAuthRoute(userRepository)
         userRoute(userRepository)
     }
 }
