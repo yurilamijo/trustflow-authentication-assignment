@@ -66,7 +66,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"Padel\",\r\n    \"description\": \"padel a project\",\r\n    \"priority\": \"Vital\"\r\n}",
+							"raw": "{\r\n    \"name\": \"Padel\",\r\n    \"description\": \"padel a project\",\r\n    \"priority\": \"VITAL\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -159,7 +159,7 @@
 							}
 						],
 						"url": {
-							"raw": "{{url}}:{{port}}/tasks/byPriority/Medium",
+							"raw": "{{url}}:{{port}}/tasks/byPriority/MEDIUM",
 							"host": [
 								"{{url}}"
 							],
@@ -167,7 +167,7 @@
 							"path": [
 								"tasks",
 								"byPriority",
-								"Medium"
+								"MEDIUM"
 							]
 						}
 					},
@@ -301,7 +301,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"firstName\": \"Yuri\",\r\n    \"lastName\": \"Lamijo\",\r\n    \"username\": \"YuriLam\",\r\n    \"password\": \"PasswordYuri\"\r\n}",
+							"raw": "{\r\n    \"firstName\": \"Yuri\",\r\n    \"lastName\": \"Lamijo\",\r\n    \"username\": \"YuriLamijo\",\r\n    \"password\": \"PasswordYuri\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -316,109 +316,6 @@
 							"port": "{{port}}",
 							"path": [
 								"register"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{jwt_token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "{{header_session_key}}",
-								"value": "{{session_key}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{url}}:{{port}}/delete/2",
-							"host": [
-								"{{url}}"
-							],
-							"port": "{{port}}",
-							"path": [
-								"delete",
-								"2"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update User",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{jwt_token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "PUT",
-						"header": [
-							{
-								"key": "{{header_session_key}}",
-								"value": "{{session_key}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"id\": 1,\r\n    \"firstName\": \"Yuri\",\r\n    \"lastName\": \"Lamijo\",\r\n    \"email\": \"yurilamijo@hotmail.com\",\r\n    \"dateOfBirth\": \"2024-04-09\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{url}}:{{port}}/update/1",
-							"host": [
-								"{{url}}"
-							],
-							"port": "{{port}}",
-							"path": [
-								"update",
-								"1"
 							]
 						}
 					},
@@ -484,6 +381,175 @@
 									"value": "",
 									"disabled": true
 								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "Update User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "{{header_session_key}}",
+								"value": "{{session_key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 1,\r\n    \"firstName\": \"Yuri\",\r\n    \"lastName\": \"Lamijo\",\r\n    \"email\": \"yurilamijo@hotmail.com\",\r\n    \"dateOfBirth\": \"2024-04-08\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}:{{port}}/user/update/1",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"user",
+								"update",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User By Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "{{header_session_key}}",
+								"value": "{{session_key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 1,\r\n    \"firstName\": \"Yuri\",\r\n    \"lastName\": \"Lamijo\",\r\n    \"email\": \"yurilamijo@hotmail.com\",\r\n    \"dateOfBirth\": \"2024-04-08\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}:{{port}}/user/1",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"user",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "{{header_session_key}}",
+								"value": "{{session_key}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}:{{port}}/user/delete/3",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"user",
+								"delete",
+								"3"
 							]
 						}
 					},

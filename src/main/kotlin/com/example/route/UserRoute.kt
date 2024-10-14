@@ -19,6 +19,17 @@ fun Routing.UserRoute(userRepository: IUserRepository) {
     authenticate("jwt-auth") {
         authorized("USER", "ADMIN") {
             route("/user") {
+                get("/{id}") {
+                    var id = call.parameters[PARAMETER_ID]
+
+                    if (id.isNullOrEmpty()) {
+                        call.respond(HttpStatusCode.BadRequest, "Failed to update user")
+                    } else {
+                        var user = userRepository.getUserById(id.toInt())
+                        call.respond(HttpStatusCode.OK, user)
+                    }
+                }
+
                 put("/update/{id}") {
                     call.requireSession()
 
@@ -27,7 +38,6 @@ fun Routing.UserRoute(userRepository: IUserRepository) {
 
                     if (id.isNullOrEmpty()) {
                         call.respond(HttpStatusCode.BadRequest, "Failed to update user")
-                        return@put
                     } else {
                         var updatedUser = userRepository.updateUser(id.toInt(), user)
                         call.respond(HttpStatusCode.OK, updatedUser)
@@ -43,7 +53,6 @@ fun Routing.UserRoute(userRepository: IUserRepository) {
 
                     if (id.isNullOrEmpty()) {
                         call.respond(HttpStatusCode.BadRequest, "Failed to delete user")
-                        return@delete
                     } else {
                         var updatedUser = userRepository.deleteUser(id.toInt())
                         call.respond(HttpStatusCode.OK, "User with id: '$id' has been successfully deleted")

@@ -1,6 +1,7 @@
 package com.example.constants
 
 // JWT constants
+const val JWT_CLAIM_USER_ID = "userId"
 const val JWT_CLAIM_USERNAME = "username"
 const val JWT_CLAIM_ROLE = "role"
 const val CONFIG_PROPERTY_JWT_AUDIENCE = "jwt.audience"
