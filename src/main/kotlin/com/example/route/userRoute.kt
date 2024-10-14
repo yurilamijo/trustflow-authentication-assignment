@@ -32,7 +32,7 @@ fun Routing.userRoute(userRepository: IUserRepository) {
         if (userAuth != null && verifyPassword(password, userAuth.password)) {
             val accessToken = JWTConfig.createToken(userAuth)
 
-            call.sessions.set(UserSession(userAuth.userId, accessToken))
+            call.sessions.set(UserSession(userAuth.userId, username))
             call.respond(
                 HttpStatusCode.OK,
                 mapOf(

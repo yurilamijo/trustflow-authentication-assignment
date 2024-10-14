@@ -9,7 +9,7 @@ class FakeUserRepository : IUserRepository {
         User(1, "Yuri", "Lamijo", "yuri@hotmail.com", LocalDate.parse("2024-08-04"))
     )
     private val allUserAuth = mutableListOf<UserAuth>(
-        UserAuth(1, "yurilamijo", "\$2a\$10\$5bcCcS.gLcaUQ8v84x4j.ufFf9sqytcCjGatUj4go4o9Rmv.lymq6")
+        UserAuth(1, "YuriLam", "\$2a\$10\$5bcCcS.gLcaUQ8v84x4j.ufFf9sqytcCjGatUj4go4o9Rmv.lymq6")
     )
 
     override suspend fun getUserAuthByUsername(username: String): UserAuth? {
@@ -32,7 +32,7 @@ class FakeUserRepository : IUserRepository {
     }
 
     override suspend fun updateUser(id: Int, user: User): User {
-        TODO("Not yet implemented")
+        return user
     }
 
     override suspend fun getUserById(id: Int): User {

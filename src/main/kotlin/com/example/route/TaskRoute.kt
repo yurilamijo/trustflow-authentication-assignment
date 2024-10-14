@@ -2,6 +2,7 @@ package com.example.route
 
 import com.example.enum.Priority
 import com.example.model.Task
+import com.example.plugins.requireSession
 import com.example.repository.ITaskRepository
 import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.JsonConvertException
@@ -19,48 +20,56 @@ const val PARAMETER_NAME = "name"
 const val PARAMETER_PRIORITY = "priority"
 
 fun Routing.taskRoute(taskRepository: ITaskRepository) {
-    route("/tasks") {
-        get {
-            val tasks = taskRepository.getAllTask()
-            call.respond(tasks)
-        }
+    authenticate("jwt-auth") {
+        route("/tasks") {
+            get {
+                call.requireSession()
 
-        get("/byName/{name}") {
-            val nameAsString = call.pathParameters[PARAMETER_NAME].takeIf { it.isNullOrEmpty() == false }
-                ?: return@get call.respond(
-                    HttpStatusCode.BadRequest
-                )
-
-            val task =
-                taskRepository.getTaskByName(nameAsString) ?: return@get call.respond(HttpStatusCode.NotFound)
-
-            call.respond(task)
-        }
-
-        get("/byPriority/{priority}") {
-            val priorityAsString = call.pathParameters[PARAMETER_PRIORITY]
-
-            if (priorityAsString.isNullOrEmpty()) {
-                call.respond(HttpStatusCode.BadRequest)
-                return@get
-            } else if (Priority.enumContains(priorityAsString)) {
-                val priority = Priority.valueOf(priorityAsString)
-                val tasksByPriority = taskRepository.getAllTaskByPriority(priority)
-
-                if (tasksByPriority.isEmpty()) {
-                    call.respond(HttpStatusCode.NotFound)
-                    return@get
-                } else {
-                    call.respond(tasksByPriority)
-                }
-            } else {
-                call.respond(HttpStatusCode.BadRequest)
-                return@get
+                val tasks = taskRepository.getAllTask()
+                call.respond(tasks)
             }
-        }
 
-        authenticate("jwt-auth") {
+            get("/byName/{name}") {
+                call.requireSession()
+
+                val nameAsString = call.pathParameters[PARAMETER_NAME].takeIf { it.isNullOrEmpty() == false }
+                    ?: return@get call.respond(
+                        HttpStatusCode.BadRequest
+                    )
+
+                val task =
+                    taskRepository.getTaskByName(nameAsString) ?: return@get call.respond(HttpStatusCode.NotFound)
+
+                call.respond(task)
+            }
+
+            get("/byPriority/{priority}") {
+                call.requireSession()
+
+                val priorityAsString = call.pathParameters[PARAMETER_PRIORITY]
+
+                if (priorityAsString.isNullOrEmpty()) {
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@get
+                } else if (Priority.enumContains(priorityAsString)) {
+                    val priority = Priority.valueOf(priorityAsString)
+                    val tasksByPriority = taskRepository.getAllTaskByPriority(priority)
+
+                    if (tasksByPriority.isEmpty()) {
+                        call.respond(HttpStatusCode.NotFound)
+                        return@get
+                    } else {
+                        call.respond(tasksByPriority)
+                    }
+                } else {
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@get
+                }
+            }
+
             post {
+                call.requireSession()
+
                 try {
                     val task = call.receive<Task>()
                     taskRepository.createTask(task)
@@ -74,6 +83,8 @@ fun Routing.taskRoute(taskRepository: ITaskRepository) {
             }
 
             delete("/{name}") {
+                call.requireSession()
+
                 val name = call.parameters[PARAMETER_NAME]
 
                 if (name.isNullOrEmpty()) {

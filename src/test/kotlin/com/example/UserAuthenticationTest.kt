@@ -2,7 +2,6 @@ package com.example
 
 import com.example.model.JWTConfig
 import com.example.model.User
-import com.example.model.UserAuth
 import com.example.model.UserLogin
 import com.example.plugins.configureDI
 import com.example.plugins.configureRouting
@@ -11,10 +10,13 @@ import com.example.plugins.configureSerialization
 import com.example.plugins.configureSession
 import com.example.repository.FakeTaskRepository
 import com.example.repository.FakeUserRepository
+import io.ktor.client.call.body
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
+import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
@@ -24,6 +26,7 @@ import io.ktor.http.headers
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.testing.testApplication
 import kotlinx.datetime.LocalDate
+import kotlinx.serialization.Serializable
 import org.koin.core.context.stopKoin
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -32,22 +35,51 @@ import kotlin.test.assertContains
 import kotlin.test.assertEquals
 
 const val RESPONSE_FIELD_ACCESS_TOKEN = "accessToken"
+const val HEADER_TRUSTFLOW_SESSION = "trustflow_session"
 
 const val TEST_VALUE_USER_ID = 1
-const val TEST_VALUE_USERNAME = "yurilamijo"
+const val TEST_VALUE_USERNAME = "YuriLam"
 const val TEST_VALUE_PASSWORD = "PasswordYuri"
 const val TEST_VALUE_FIRSTNAME = "Yuri"
 const val TEST_VALUE_LASTNAME = "Lamijo"
 const val TEST_VALUE_EMAIL = "yuri@test.nl"
 const val TEST_VALUE_DATE_OF_BIRTH = "1999-04-08"
 
+@Serializable
+data class UserLoginBody(
+    val accessToken: String
+)
+
 class UserAuthenticationTest {
+    private lateinit var token_jwt: String
+    private lateinit var token_session: String
+
     val fakeTaskRepository = FakeTaskRepository()
     val fakeUserRepository = FakeUserRepository()
 
     @BeforeTest
-    fun startUp() {
+    fun startUp() = testApplication {
         JWTConfig.init("jwt-audience", "jwt-issuer", "ktor sample app", "test-secret-123")
+        application {
+            configureDI()
+            configureSerialization()
+            configureSession()
+            configureSecurity()
+            configureRouting(userRepository = fakeUserRepository)
+        }
+        val client = createClient {
+            install(ContentNegotiation) {
+                json()
+            }
+        }
+        val response: HttpResponse = client.post("/login") {
+            contentType(ContentType.Application.Json)
+            setBody(UserLogin(TEST_VALUE_USERNAME, TEST_VALUE_PASSWORD))
+        }
+        var responseBody = response.body<UserLoginBody>()
+
+        token_jwt = responseBody.accessToken
+        token_session = response.headers.get(HEADER_TRUSTFLOW_SESSION).toString()
     }
 
     @AfterTest
@@ -76,6 +108,8 @@ class UserAuthenticationTest {
         }
         assertEquals(HttpStatusCode.OK, response.status)
         assertContains(response.bodyAsText(), RESPONSE_FIELD_ACCESS_TOKEN)
+
+        return@testApplication
     }
 
     @Test
@@ -112,26 +146,24 @@ class UserAuthenticationTest {
             }
         }
 
-        val userAuth = UserAuth(username = TEST_VALUE_USERNAME, password = TEST_VALUE_PASSWORD)
-        val accessToken = JWTConfig.createToken(userAuth)
-
-        println("Generated Access Token: $accessToken") // Debug: Log the token
-
         val response = client.put("/update/1") {
             headers {
-                append(HttpHeaders.Authorization, "Bearer $accessToken")
-                contentType(ContentType.Application.Json)
-                setBody(
-                    User(
-                        TEST_VALUE_USER_ID,
-                        TEST_VALUE_FIRSTNAME,
-                        TEST_VALUE_LASTNAME,
-                        TEST_VALUE_EMAIL,
-                        LocalDate.parse(TEST_VALUE_DATE_OF_BIRTH)
-                    )
-                )
+                header(HttpHeaders.ContentType, ContentType.Application.Json)
+                header(HttpHeaders.Authorization, "Bearer $token_jwt")
+                header(HEADER_TRUSTFLOW_SESSION, token_session)
             }
+            setBody(
+                User(
+                    TEST_VALUE_USER_ID,
+                    TEST_VALUE_FIRSTNAME,
+                    TEST_VALUE_LASTNAME,
+                    TEST_VALUE_EMAIL,
+                    LocalDate.parse(TEST_VALUE_DATE_OF_BIRTH)
+                )
+            )
+            contentType(ContentType.Application.Json)
         }
+
         assertEquals(HttpStatusCode.OK, response.status)
     }
 }
