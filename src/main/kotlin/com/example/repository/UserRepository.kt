@@ -6,6 +6,7 @@ import com.example.database.UserDAO
 import com.example.database.UserTable
 import com.example.database.userAuthDAOToUserAuth
 import com.example.database.userDAOToUser
+import com.example.enum.UserRole
 import com.example.model.User
 import com.example.model.UserAuth
 import com.example.plugins.dbQuery
@@ -43,6 +44,7 @@ class UserRepository : IUserRepository {
             val userId = UserTable.insertAndGetId {
                 it[UserTable.firstName] = user.firstName
                 it[UserTable.lastName] = user.lastName
+                it[UserTable.role] = UserRole.USER.toString()
             }
             UserAuthTable.insert {
                 it[UserAuthTable.userId] = userId.value

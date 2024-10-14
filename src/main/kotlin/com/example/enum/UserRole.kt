@@ -1,7 +1,7 @@
 package com.example.enum
 
-enum class Priority {
-    LOW, MEDIUM, HIGH, VITAL;
+enum class UserRole {
+    USER, ADMIN;
 
     companion object {
         infix fun enumContains(name: String): Boolean {

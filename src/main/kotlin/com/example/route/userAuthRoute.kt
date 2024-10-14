@@ -1,6 +1,7 @@
 package com.example.route
 
 import com.example.constants.RESPONSE_FIELD_ACCESS_TOKEN
+import com.example.enum.UserRole
 import com.example.extension.hashPassword
 import com.example.extension.verifyPassword
 import com.example.model.JWTConfig
@@ -26,7 +27,8 @@ fun Routing.userAuthRoute(userRepository: IUserRepository) {
         val userAuth = userRepository.getUserAuthByUsername(username)
 
         if (userAuth != null && verifyPassword(password, userAuth.password)) {
-            val accessToken = JWTConfig.createToken(userAuth)
+            val user = userRepository.getUserById(userAuth.userId)
+            val accessToken = JWTConfig.createToken(userAuth, user)
 
             call.sessions.set(UserSession(userAuth.userId, username))
             call.respond(

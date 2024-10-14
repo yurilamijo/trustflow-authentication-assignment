@@ -22,7 +22,7 @@ class TaskTest : BaseApplicationTest() {
         setupTestApplication(this)
         val client = createTestClient(this)
 
-        val response = client.get("/tasks/byPriority/Medium") {
+        val response = client.get("/tasks/byPriority/MEDIUM") {
             headers {
                 header(HttpHeaders.ContentType, ContentType.Application.Json)
                 header(HttpHeaders.Authorization, "Bearer $token_jwt")
@@ -64,7 +64,7 @@ class TaskTest : BaseApplicationTest() {
         setupTestApplication(this)
         val client = createTestClient(this)
 
-        val task = Task(TEST_VALUE_TASK_PADEL, TEST_VALUE_TASK_PADEL_DESCRIPTION, Priority.Low)
+        val task = Task(TEST_VALUE_TASK_PADEL, TEST_VALUE_TASK_PADEL_DESCRIPTION, Priority.LOW)
         val responseCreation = client.post("/tasks") {
             headers {
                 header(HttpHeaders.ContentType, ContentType.Application.Json)

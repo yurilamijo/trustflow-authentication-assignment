@@ -2,6 +2,7 @@ package com.example
 
 import com.example.constants.HEADER_TRUSTFLOW_SESSION
 import com.example.constants.RESPONSE_FIELD_ACCESS_TOKEN
+import com.example.enum.UserRole
 import com.example.model.User
 import com.example.model.UserLogin
 import io.ktor.client.request.header
@@ -54,7 +55,7 @@ class UserAuthenticationTest : BaseApplicationTest() {
         val client = createTestClient(this)
 
         val response = client.put("/user/update/{id}")
-        assertEquals(HttpStatusCode.Unauthorized, response.status)
+        assertEquals(HttpStatusCode.Forbidden, response.status)
     }
 
     @Test
@@ -74,7 +75,8 @@ class UserAuthenticationTest : BaseApplicationTest() {
                     TEST_VALUE_FIRSTNAME,
                     TEST_VALUE_LASTNAME,
                     TEST_VALUE_EMAIL,
-                    LocalDate.parse(TEST_VALUE_DATE_OF_BIRTH)
+                    LocalDate.parse(TEST_VALUE_DATE_OF_BIRTH),
+                    UserRole.ADMIN
                 )
             )
             contentType(ContentType.Application.Json)

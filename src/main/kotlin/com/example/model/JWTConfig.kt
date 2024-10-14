@@ -7,6 +7,7 @@ import com.example.constants.CONFIG_PROPERTY_JWT_AUDIENCE
 import com.example.constants.CONFIG_PROPERTY_JWT_ISSUER
 import com.example.constants.CONFIG_PROPERTY_JWT_REALM
 import com.example.constants.CONFIG_PROPERTY_JWT_SECRET
+import com.example.constants.JWT_CLAIM_ROLE
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.config.ApplicationConfig
 import java.util.Date
@@ -31,11 +32,12 @@ object JWTConfig {
         this.secret = secret
     }
 
-    fun createToken(userAuth: UserAuth): String {
+    fun createToken(userAuth: UserAuth, user: User): String {
         return JWT.create()
             .withAudience(this.audience)
             .withIssuer(this.issuer)
             .withClaim(JWT_CLAIM_USERNAME, userAuth.username)
+            .withClaim(JWT_CLAIM_ROLE, user.role.toString())
             .withExpiresAt(Date(System.currentTimeMillis() + 300000))
             .sign(Algorithm.HMAC256(this.secret))
     }

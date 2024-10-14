@@ -1,12 +1,13 @@
 package com.example.repository
 
+import com.example.enum.UserRole
 import com.example.model.User
 import com.example.model.UserAuth
 import kotlinx.datetime.LocalDate
 
 class FakeUserRepository : IUserRepository {
     private val allUser = mutableListOf<User>(
-        User(1, "Yuri", "Lamijo", "yuri@hotmail.com", LocalDate.parse("2024-08-04"))
+        User(1, "Yuri", "Lamijo", "yuri@hotmail.com", LocalDate.parse("2024-08-04"), UserRole.ADMIN)
     )
     private val allUserAuth = mutableListOf<UserAuth>(
         UserAuth(1, "YuriLam", "\$2a\$10\$5bcCcS.gLcaUQ8v84x4j.ufFf9sqytcCjGatUj4go4o9Rmv.lymq6")

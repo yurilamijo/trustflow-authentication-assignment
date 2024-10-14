@@ -1,7 +1,9 @@
 package com.example.route
 
 import com.example.enum.Priority
+import com.example.extension.authorized
 import com.example.model.Task
+import com.example.plugins.checkUserRole
 import com.example.plugins.requireSession
 import com.example.repository.ITaskRepository
 import io.ktor.http.HttpStatusCode
@@ -21,80 +23,83 @@ private const val PARAMETER_PRIORITY = "priority"
 
 fun Routing.taskRoute(taskRepository: ITaskRepository) {
     authenticate("jwt-auth") {
-        route("/tasks") {
-            get {
-                call.requireSession()
+        authorized("USER", "ADMIN") {
+            route("/tasks") {
+                get {
+                    call.requireSession()
 
-                val tasks = taskRepository.getAllTask()
-                call.respond(tasks)
-            }
+                    val tasks = taskRepository.getAllTask()
+                    call.respond(tasks)
+                }
 
-            get("/byName/{name}") {
-                call.requireSession()
+                get("/byName/{name}") {
+                    call.requireSession()
 
-                val nameAsString = call.pathParameters[PARAMETER_NAME].takeIf { it.isNullOrEmpty() == false }
-                    ?: return@get call.respond(
-                        HttpStatusCode.BadRequest
-                    )
+                    val nameAsString = call.pathParameters[PARAMETER_NAME].takeIf { it.isNullOrEmpty() == false }
+                        ?: return@get call.respond(
+                            HttpStatusCode.BadRequest
+                        )
 
-                val task =
-                    taskRepository.getTaskByName(nameAsString) ?: return@get call.respond(HttpStatusCode.NotFound)
+                    val task =
+                        taskRepository.getTaskByName(nameAsString) ?: return@get call.respond(HttpStatusCode.NotFound)
 
-                call.respond(task)
-            }
+                    call.respond(task)
+                }
 
-            get("/byPriority/{priority}") {
-                call.requireSession()
+                get("/byPriority/{priority}") {
+                    call.requireSession()
 
-                val priorityAsString = call.pathParameters[PARAMETER_PRIORITY]
+                    val priorityAsString = call.pathParameters[PARAMETER_PRIORITY]
 
-                if (priorityAsString.isNullOrEmpty()) {
-                    call.respond(HttpStatusCode.BadRequest)
-                    return@get
-                } else if (Priority.enumContains(priorityAsString)) {
-                    val priority = Priority.valueOf(priorityAsString)
-                    val tasksByPriority = taskRepository.getAllTaskByPriority(priority)
-
-                    if (tasksByPriority.isEmpty()) {
-                        call.respond(HttpStatusCode.NotFound)
+                    if (priorityAsString.isNullOrEmpty()) {
+                        call.respond(HttpStatusCode.BadRequest)
                         return@get
+                    } else if (Priority.enumContains(priorityAsString)) {
+                        val priority = Priority.valueOf(priorityAsString)
+                        val tasksByPriority = taskRepository.getAllTaskByPriority(priority)
+
+                        if (tasksByPriority.isEmpty()) {
+                            call.respond(HttpStatusCode.NotFound)
+                            return@get
+                        } else {
+                            call.respond(tasksByPriority)
+                        }
                     } else {
-                        call.respond(tasksByPriority)
-                    }
-                } else {
-                    call.respond(HttpStatusCode.BadRequest)
-                    return@get
-                }
-            }
-
-            post {
-                call.requireSession()
-
-                try {
-                    val task = call.receive<Task>()
-                    taskRepository.createTask(task)
-                    call.respond(HttpStatusCode.Created, task)
-                } catch (ex: Exception) {
-                    when (ex) {
-                        is IllegalStateException, is JsonConvertException -> call.respond(HttpStatusCode.BadRequest)
-                        else -> throw ex
+                        call.respond(HttpStatusCode.BadRequest)
+                        return@get
                     }
                 }
-            }
 
-            delete("/{name}") {
-                call.requireSession()
+                post {
+                    call.requireSession()
 
-                val name = call.parameters[PARAMETER_NAME]
+                    try {
+                        val task = call.receive<Task>()
+                        taskRepository.createTask(task)
+                        call.respond(HttpStatusCode.Created, task)
+                    } catch (ex: Exception) {
+                        when (ex) {
+                            is IllegalStateException, is JsonConvertException -> call.respond(HttpStatusCode.BadRequest)
+                            else -> throw ex
+                        }
+                    }
+                }
 
-                if (name.isNullOrEmpty()) {
-                    call.respond(HttpStatusCode.BadRequest)
-                    return@delete
-                } else if (taskRepository.deleteTask(name)) {
-                    call.respond(HttpStatusCode.NoContent)
-                } else {
-                    call.respond(HttpStatusCode.NotFound)
-                    return@delete
+                delete("/{name}") {
+                    call.requireSession()
+                    call.checkUserRole("ADMIN")
+
+                    val name = call.parameters[PARAMETER_NAME]
+
+                    if (name.isNullOrEmpty()) {
+                        call.respond(HttpStatusCode.BadRequest)
+                        return@delete
+                    } else if (taskRepository.deleteTask(name)) {
+                        call.respond(HttpStatusCode.NoContent)
+                    } else {
+                        call.respond(HttpStatusCode.NotFound)
+                        return@delete
+                    }
                 }
             }
         }

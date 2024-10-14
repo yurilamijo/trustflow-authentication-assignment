@@ -1,5 +1,6 @@
 package com.example.model
 
+import com.example.enum.UserRole
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
@@ -9,5 +10,6 @@ data class User(
     val firstName: String,
     val lastName: String,
     val email: String?,
-    val dateOfBirth: LocalDate?
+    val dateOfBirth: LocalDate?,
+    val role: UserRole = UserRole.USER
 )
