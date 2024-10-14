@@ -40,5 +40,3 @@ object JWTConfig {
             .sign(Algorithm.HMAC256(this.secret))
     }
 }
-
-fun JWTPrincipal.name(): String? = this.payload.getClaim(JWT_CLAIM_USERNAME).asString()

@@ -14,6 +14,7 @@ private const val TEST_VALUE_PASSWORD = "PasswordYuri"
 private const val TEST_VALUE_TASK_COOKING = "Cooking"
 private const val TEST_VALUE_TASK_CLEANING = "Cleaning"
 private const val TEST_VALUE_TASK_PADEL = "Padel"
+private const val TEST_VALUE_TASK_PADEL_DESCRIPTION = "Time to go padel"
 
 class TaskTest : BaseApplicationTest() {
     @Test
@@ -63,7 +64,7 @@ class TaskTest : BaseApplicationTest() {
         setupTestApplication(this)
         val client = createTestClient(this)
 
-        val task = Task("Padel", "Time to go padel", Priority.Low)
+        val task = Task(TEST_VALUE_TASK_PADEL, TEST_VALUE_TASK_PADEL_DESCRIPTION, Priority.Low)
         val responseCreation = client.post("/tasks") {
             headers {
                 header(HttpHeaders.ContentType, ContentType.Application.Json)
