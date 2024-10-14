@@ -2,15 +2,14 @@ package com.example.model
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
+import com.example.constants.JWT_CLAIM_USERNAME
+import com.example.constants.CONFIG_PROPERTY_JWT_AUDIENCE
+import com.example.constants.CONFIG_PROPERTY_JWT_ISSUER
+import com.example.constants.CONFIG_PROPERTY_JWT_REALM
+import com.example.constants.CONFIG_PROPERTY_JWT_SECRET
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.config.ApplicationConfig
 import java.util.Date
-
-const val JWT_CLAIM_USERNAME = "username"
-const val CONFIG_PROPERTY_JWT_AUDIENCE = "jwt.audience"
-const val CONFIG_PROPERTY_JWT_ISSUER = "jwt.issuer"
-const val CONFIG_PROPERTY_JWT_REALM = "jwt.realm"
-const val CONFIG_PROPERTY_JWT_SECRET = "jwt.secret"
 
 object JWTConfig {
     lateinit var audience: String

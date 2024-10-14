@@ -1,5 +1,6 @@
 package com.example.database
 
+import com.example.constants.COLUMN_VARCHAR_LENGTH_50
 import com.example.model.User
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
@@ -9,12 +10,12 @@ import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.javatime.date
 
-const val TABLE_USER_NAME = "user"
-const val TABLE_USER_COLUMN_FIRSTNAME = "firstName"
-const val TABLE_USER_COLUMN_LASTNAME = "lastName"
-const val TABLE_USER_COLUMN_EMAIL = "email"
-const val TABLE_USER_COLUMN_DATE_OF_BIRTH = "dateOfBirth"
-const val COLUMN_VARCHAR_LENGTH_100 = 100
+private const val TABLE_USER_NAME = "user"
+private const val TABLE_USER_COLUMN_FIRSTNAME = "firstName"
+private const val TABLE_USER_COLUMN_LASTNAME = "lastName"
+private const val TABLE_USER_COLUMN_EMAIL = "email"
+private const val TABLE_USER_COLUMN_DATE_OF_BIRTH = "dateOfBirth"
+private const val COLUMN_VARCHAR_LENGTH_100 = 100
 
 object UserTable : IntIdTable(TABLE_USER_NAME) {
     val firstName = varchar(TABLE_USER_COLUMN_FIRSTNAME, COLUMN_VARCHAR_LENGTH_50)

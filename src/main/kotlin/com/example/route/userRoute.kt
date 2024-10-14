@@ -19,10 +19,8 @@ import io.ktor.server.sessions.clear
 import io.ktor.server.sessions.get
 import io.ktor.server.sessions.sessions
 import io.ktor.server.sessions.set
-import kotlinx.serialization.Serializable
 
-@Serializable
-data class RefreshToken(val token: String)
+private const val PARAMETER_ID = "id"
 
 fun Routing.userRoute(userRepository: IUserRepository) {
     post("/login") {
@@ -78,7 +76,7 @@ fun Routing.userRoute(userRepository: IUserRepository) {
             call.requireSession()
 
             val user = call.receive<User>()
-            var id = call.parameters["id"]
+            var id = call.parameters[PARAMETER_ID]
 
             if (id.isNullOrEmpty()) {
                 call.respond(HttpStatusCode.BadRequest, "Failed to update user")
@@ -93,7 +91,7 @@ fun Routing.userRoute(userRepository: IUserRepository) {
             call.requireSession()
             var session = call.sessions.get<UserSession>()
 
-            var id = call.parameters["id"]
+            var id = call.parameters[PARAMETER_ID]
 
             if (id.isNullOrEmpty()) {
                 call.respond(HttpStatusCode.BadRequest, "Failed to delete user")

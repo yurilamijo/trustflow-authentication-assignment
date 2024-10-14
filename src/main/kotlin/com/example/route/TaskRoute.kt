@@ -16,8 +16,8 @@ import io.ktor.server.routing.post
 import io.ktor.server.routing.route
 import kotlin.text.isNullOrEmpty
 
-const val PARAMETER_NAME = "name"
-const val PARAMETER_PRIORITY = "priority"
+private const val PARAMETER_NAME = "name"
+private const val PARAMETER_PRIORITY = "priority"
 
 fun Routing.taskRoute(taskRepository: ITaskRepository) {
     authenticate("jwt-auth") {

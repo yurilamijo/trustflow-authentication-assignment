@@ -1,5 +1,11 @@
 package com.example
 
+import com.example.constants.HEADER_TRUSTFLOW_SESSION
+import com.example.constants.RESPONSE_FIELD_ACCESS_TOKEN
+import com.example.constants.TEST_JWT_CONFIG_AUDIENCE
+import com.example.constants.TEST_JWT_CONFIG_ISSUER
+import com.example.constants.TEST_JWT_CONFIG_REALM
+import com.example.constants.TEST_JWT_CONFIG_SECRET
 import com.example.model.JWTConfig
 import com.example.model.User
 import com.example.model.UserLogin
@@ -34,16 +40,13 @@ import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 
-const val RESPONSE_FIELD_ACCESS_TOKEN = "accessToken"
-const val HEADER_TRUSTFLOW_SESSION = "trustflow_session"
-
-const val TEST_VALUE_USER_ID = 1
-const val TEST_VALUE_USERNAME = "YuriLam"
-const val TEST_VALUE_PASSWORD = "PasswordYuri"
-const val TEST_VALUE_FIRSTNAME = "Yuri"
-const val TEST_VALUE_LASTNAME = "Lamijo"
-const val TEST_VALUE_EMAIL = "yuri@test.nl"
-const val TEST_VALUE_DATE_OF_BIRTH = "1999-04-08"
+private const val TEST_VALUE_USER_ID = 1
+private const val TEST_VALUE_USERNAME = "YuriLam"
+private const val TEST_VALUE_PASSWORD = "PasswordYuri"
+private const val TEST_VALUE_FIRSTNAME = "Yuri"
+private const val TEST_VALUE_LASTNAME = "Lamijo"
+private const val TEST_VALUE_EMAIL = "yuri@test.nl"
+private const val TEST_VALUE_DATE_OF_BIRTH = "1999-04-08"
 
 @Serializable
 data class UserLoginBody(
@@ -59,7 +62,8 @@ class UserAuthenticationTest {
 
     @BeforeTest
     fun startUp() = testApplication {
-        JWTConfig.init("jwt-audience", "jwt-issuer", "ktor sample app", "test-secret-123")
+        JWTConfig.init(TEST_JWT_CONFIG_AUDIENCE, TEST_JWT_CONFIG_ISSUER, TEST_JWT_CONFIG_REALM, TEST_JWT_CONFIG_SECRET)
+
         application {
             configureDI()
             configureSerialization()

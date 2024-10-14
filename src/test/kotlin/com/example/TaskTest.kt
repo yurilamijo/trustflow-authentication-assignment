@@ -1,5 +1,10 @@
 package com.example
 
+import com.example.constants.HEADER_TRUSTFLOW_SESSION
+import com.example.constants.TEST_JWT_CONFIG_AUDIENCE
+import com.example.constants.TEST_JWT_CONFIG_ISSUER
+import com.example.constants.TEST_JWT_CONFIG_REALM
+import com.example.constants.TEST_JWT_CONFIG_SECRET
 import com.example.enum.Priority
 import com.example.model.JWTConfig
 import com.example.model.Task
@@ -21,9 +26,11 @@ import io.ktor.server.testing.*
 import org.koin.core.context.stopKoin
 import kotlin.test.*
 
-const val TEST_VALUE_TASK_COOKING = "Cooking"
-const val TEST_VALUE_TASK_CLEANING = "Cleaning"
-const val TEST_VALUE_TASK_PADEL = "Padel"
+private const val TEST_VALUE_USERNAME = "YuriLam"
+private const val TEST_VALUE_PASSWORD = "PasswordYuri"
+private const val TEST_VALUE_TASK_COOKING = "Cooking"
+private const val TEST_VALUE_TASK_CLEANING = "Cleaning"
+private const val TEST_VALUE_TASK_PADEL = "Padel"
 
 class TaskTest {
     private lateinit var token_jwt: String
@@ -34,7 +41,8 @@ class TaskTest {
 
     @BeforeTest
     fun startUp() = testApplication {
-        JWTConfig.init("jwt-audience", "jwt-issuer", "ktor sample app", "test-secret-123")
+        JWTConfig.init(TEST_JWT_CONFIG_AUDIENCE, TEST_JWT_CONFIG_ISSUER, TEST_JWT_CONFIG_REALM, TEST_JWT_CONFIG_SECRET)
+
         application {
             configureDI()
             configureSerialization()

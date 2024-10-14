@@ -1,16 +1,17 @@
 package com.example.database
 
+import com.example.constants.COLUMN_VARCHAR_LENGTH_225
+import com.example.constants.COLUMN_VARCHAR_LENGTH_50
 import com.example.model.UserAuth
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 
-const val TABLE_USER_AUTH_NAME = "userAuth"
-const val TABLE_USER_AUTH_COLUMN_USER_ID = "userId"
-const val TABLE_USER_AUTH_COLUMN_USERNAME = "username"
-const val TABLE_USER_AUTH_COLUMN_PASSWORD = "password"
-const val COLUMN_VARCHAR_LENGTH_225 = 255
+private const val TABLE_USER_AUTH_NAME = "userAuth"
+private const val TABLE_USER_AUTH_COLUMN_USER_ID = "userId"
+private const val TABLE_USER_AUTH_COLUMN_USERNAME = "username"
+private const val TABLE_USER_AUTH_COLUMN_PASSWORD = "password"
 
 object UserAuthTable : IntIdTable(TABLE_USER_AUTH_NAME) {
     val userId = integer(TABLE_USER_AUTH_COLUMN_USER_ID).references(UserTable.id)

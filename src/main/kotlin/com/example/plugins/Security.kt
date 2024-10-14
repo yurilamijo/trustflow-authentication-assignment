@@ -22,8 +22,6 @@ fun Application.configureSecurity() {
                     .build()
             )
             validate { credential ->
-                println("Validating token...")
-
                 if (credential.payload.audience.contains(JWTConfig.audience)) {
                     JWTPrincipal(credential.payload)
                 } else {
