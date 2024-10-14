@@ -7,9 +7,9 @@ import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransacti
 
 fun Application.configureDatabases() {
     val database = Database.connect(
-        url = "jdbc:mysql://localhost:3306/trustflow",
-        user = "yuri",
-        password = "yuri",
+        url = environment.config.property("database.url").getString(),
+        user = environment.config.property("database.user").getString(),
+        password = environment.config.property("database.password").getString(),
     )
 }
 
