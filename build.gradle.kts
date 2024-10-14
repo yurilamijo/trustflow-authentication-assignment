@@ -47,6 +47,9 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
     testImplementation("io.ktor:ktor-client-content-negotiation-jvm")
 
+    // CORS
+    implementation("io.ktor:ktor-server-cors:$ktor_version")
+
     // mySQL
     implementation("mysql:mysql-connector-java:$mysqlVersion")
 
