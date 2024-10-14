@@ -10,12 +10,8 @@ import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
 
 val appModule = module {
-    single<ITaskRepository> {
-        TaskRepository()
-    }
-    single<IUserRepository> {
-        UserRepository()
-    }
+    single<ITaskRepository> { TaskRepository() }
+    single<IUserRepository> { UserRepository() }
 }
 
 fun Application.configureDI() {

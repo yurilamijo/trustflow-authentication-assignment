@@ -10,6 +10,7 @@ import com.example.enum.UserRole
 import com.example.model.User
 import com.example.model.UserAuth
 import com.example.plugins.dbQuery
+import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.insertAndGetId
@@ -40,8 +41,10 @@ class UserRepository : IUserRepository {
     }
 
     override suspend fun createUser(user: User, userAuth: UserAuth): User {
+        lateinit var userId: EntityID<Int>
+
         dbQuery {
-            val userId = UserTable.insertAndGetId {
+            userId = UserTable.insertAndGetId {
                 it[UserTable.firstName] = user.firstName
                 it[UserTable.lastName] = user.lastName
                 it[UserTable.role] = UserRole.USER.toString()
@@ -53,8 +56,7 @@ class UserRepository : IUserRepository {
             }
         }
 
-        // TODO: Check this code as this is kinda weird
-        return user
+        return getUserById(userId.value)
     }
 
     override suspend fun deleteUser(id: Int): Boolean {

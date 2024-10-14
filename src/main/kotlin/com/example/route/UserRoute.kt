@@ -15,7 +15,7 @@ import io.ktor.server.sessions.sessions
 
 private const val PARAMETER_ID = "id"
 
-fun Routing.userRoute(userRepository: IUserRepository) {
+fun Routing.UserRoute(userRepository: IUserRepository) {
     authenticate("jwt-auth") {
         authorized("USER", "ADMIN") {
             route("/user") {

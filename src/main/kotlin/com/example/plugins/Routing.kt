@@ -3,8 +3,8 @@ package com.example.plugins
 import com.example.repository.ITaskRepository
 import com.example.repository.IUserRepository
 import com.example.route.taskRoute
-import com.example.route.userAuthRoute
-import com.example.route.userRoute
+import com.example.route.UserAuthRoute
+import com.example.route.UserRoute
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.statuspages.*
@@ -14,7 +14,7 @@ import org.koin.ktor.ext.get
 
 fun Application.configureRouting(
     taskRepository: ITaskRepository = get(),
-    userRepository: IUserRepository = get()
+    userRepository: IUserRepository = get(),
 ) {
     install(StatusPages) {
         exception<Throwable> { call, cause ->
@@ -24,7 +24,7 @@ fun Application.configureRouting(
 
     routing {
         taskRoute(taskRepository)
-        userAuthRoute(userRepository)
-        userRoute(userRepository)
+        UserAuthRoute(userRepository)
+        UserRoute(userRepository)
     }
 }

@@ -1,7 +1,6 @@
 package com.example.route
 
 import com.example.constants.RESPONSE_FIELD_ACCESS_TOKEN
-import com.example.enum.UserRole
 import com.example.extension.hashPassword
 import com.example.extension.verifyPassword
 import com.example.model.JWTConfig
@@ -21,7 +20,7 @@ import io.ktor.server.sessions.clear
 import io.ktor.server.sessions.sessions
 import io.ktor.server.sessions.set
 
-fun Routing.userAuthRoute(userRepository: IUserRepository) {
+fun Routing.UserAuthRoute(userRepository: IUserRepository) {
     post("/login") {
         val (username, password) = call.receive<UserLogin>()
         val userAuth = userRepository.getUserAuthByUsername(username)
