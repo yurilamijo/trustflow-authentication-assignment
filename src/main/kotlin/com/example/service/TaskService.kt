@@ -17,23 +17,23 @@ class TaskService(private val taskRepository: ITaskRepository) : ITaskService {
             ?: throw UserException(HttpStatusCode.BadRequest, "No name was given.")
 
         return taskRepository.getTaskByName(name)
-            ?: throw UserException(HttpStatusCode.NotFound, "Could not find any task with the name $name")
+            ?: throw UserException(HttpStatusCode.NotFound, "Could not find any task with the name $name.")
     }
 
     override suspend fun getAllTaskByPriority(priorityAsString: String?): List<Task> {
         if (priorityAsString.isNullOrEmpty()) {
-            throw UserException(HttpStatusCode.BadRequest, "")
+            throw UserException(HttpStatusCode.BadRequest, "The priority parameter cannot be empty.")
         } else if (Priority.enumContains(priorityAsString)) {
             val priority = Priority.valueOf(priorityAsString)
             val tasksByPriority = taskRepository.getAllTaskByPriority(priority)
 
             if (tasksByPriority.isEmpty()) {
-                throw UserException(HttpStatusCode.NotFound, "Could not find any task with the priority $priority")
+                throw UserException(HttpStatusCode.NotFound, "Could not find any task with the priority $priority.")
             } else {
                 return tasksByPriority
             }
         } else {
-            throw UserException(HttpStatusCode.BadRequest, "")
+            throw UserException(HttpStatusCode.BadRequest, "The given priority is unknown.")
         }
     }
 
@@ -46,6 +46,6 @@ class TaskService(private val taskRepository: ITaskRepository) : ITaskService {
             ?: throw UserException(HttpStatusCode.BadRequest, "No name was given.")
 
         return taskRepository.deleteTask(name)
-            ?: throw UserException(HttpStatusCode.BadRequest, "A issue occured while deleting $name")
+            ?: throw UserException(HttpStatusCode.BadRequest, "A issue occured while deleting $name.")
     }
 }

@@ -1,5 +1,6 @@
 package com.example.repository
 
+import com.example.enum.UserRole
 import com.example.model.User
 import com.example.model.UserAuth
 
@@ -10,4 +11,5 @@ interface IUserRepository {
     suspend fun deleteUser(userId: Int): Boolean
     suspend fun updateUser(userId: Int, user: User): User
     suspend fun getUserById(userId: Int): User
+    suspend fun getAllUserByRole(userRole: UserRole): List<User>
 }

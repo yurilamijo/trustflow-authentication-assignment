@@ -24,7 +24,7 @@ class UserService(private val userRepository: IUserRepository) : IUserService {
 
             return UserSession(userAuth.userId, username, user.role, accessToken)
         } else {
-            throw UserException(HttpStatusCode.Forbidden, "Login failed")
+            throw UserException(HttpStatusCode.Forbidden, "Login failed.")
         }
     }
 
@@ -32,7 +32,7 @@ class UserService(private val userRepository: IUserRepository) : IUserService {
         var (firstName, lastName, username, password) = userRegister;
 
         if (userRepository.doesUserAuthExistsByUsername(username)) {
-            throw UserException(HttpStatusCode.BadRequest, "A user with the username: $username already exists")
+            throw UserException(HttpStatusCode.BadRequest, "A user with the username: $username already exists.")
         } else {
             val user = User(
                 firstName = firstName,
@@ -57,6 +57,23 @@ class UserService(private val userRepository: IUserRepository) : IUserService {
             )
         } else {
             return userRepository.getUserById(userId)
+        }
+    }
+
+    override suspend fun getAllUserByRole(userRoleAsString: String?): List<User> {
+        if (userRoleAsString.isNullOrEmpty()) {
+            throw UserException(HttpStatusCode.BadRequest, "The user role parameter cannot be empty.")
+        } else if (UserRole.enumContains(userRoleAsString)) {
+            val userRole = UserRole.valueOf(userRoleAsString)
+            val allUserWithUserRoleUser = userRepository.getAllUserByRole(userRole)
+
+            if (allUserWithUserRoleUser.isEmpty()) {
+                throw UserException(HttpStatusCode.NotFound, "Could not find any users with the user role $userRoleAsString.")
+            } else {
+                return allUserWithUserRoleUser
+            }
+        } else {
+            throw UserException(HttpStatusCode.BadRequest, "The given user role is unknown.")
         }
     }
 

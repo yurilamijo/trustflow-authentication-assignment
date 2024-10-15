@@ -5,7 +5,7 @@ enum class UserRole {
 
     companion object {
         infix fun enumContains(name: String): Boolean {
-            return enumValues<Priority>().any() { it.name == name }
+            return enumValues<UserRole>().any() { it.name == name }
         }
     }
 }
