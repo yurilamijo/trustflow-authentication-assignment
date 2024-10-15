@@ -5,10 +5,10 @@ import com.example.model.Task
 
 class FakeTaskRepository : ITaskRepository {
     private val allTask = mutableListOf<Task>(
-        Task("Coding", "Coding a project", Priority.VITAL),
-        Task("Bouldering", "Time to go bouldering", Priority.LOW),
-        Task("Cooking", "Cooking a meal", Priority.MEDIUM),
-        Task("Cleaning", "Clean the house", Priority.MEDIUM),
+        Task(1, "Coding", "Coding a project", Priority.VITAL),
+        Task(2, "Bouldering","Time to go bouldering", Priority.LOW),
+        Task(3, "Cooking", "Cooking a meal", Priority.MEDIUM),
+        Task(4, "Cleaning", "Clean the house", Priority.MEDIUM),
     )
 
     override suspend fun getAllTask(): List<Task> {

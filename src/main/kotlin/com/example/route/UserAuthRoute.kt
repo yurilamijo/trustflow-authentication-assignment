@@ -56,7 +56,6 @@ fun Routing.userAuthRoute(userRepository: IUserRepository) {
                 throw UserException(HttpStatusCode.BadRequest, "A user with the username: $username already exists")
             } else {
                 val user = User(
-                    id = null,
                     firstName = firstName,
                     lastName = lastName,
                     email = null,

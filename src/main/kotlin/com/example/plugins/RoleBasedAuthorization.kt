@@ -1,12 +1,10 @@
 package com.example.plugins
 
-import com.example.model.UserSession
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
 import io.ktor.server.response.*
-import io.ktor.server.sessions.get
 
 class RoleAuthentication {
     var roles: Set<String> = emptySet();

@@ -77,4 +77,19 @@ abstract class BaseApplicationTest {
     fun tearDown() {
         stopKoin()
     }
+
+    protected fun userLogin(username: String = TEST_VALUE_USERNAME, password: String = TEST_VALUE_PASSWORD) = testApplication {
+        JWTConfig.init(TEST_JWT_CONFIG_AUDIENCE, TEST_JWT_CONFIG_ISSUER, TEST_JWT_CONFIG_REALM, TEST_JWT_CONFIG_SECRET)
+        setupTestApplication(this)
+        val client = createTestClient(this)
+
+        val response: HttpResponse = client.post("/login") {
+            contentType(ContentType.Application.Json)
+            setBody(UserLogin(username, password))
+        }
+        var responseBody = response.body<UserLoginBody>()
+
+        token_jwt = responseBody.accessToken
+        token_session = response.headers[HEADER_TRUSTFLOW_SESSION].toString()
+    }
 }

@@ -47,11 +47,11 @@ fun Routing.userRoute(userRepository: IUserRepository) {
 
                         if (userId == null) {
                             throw UserException(HttpStatusCode.BadRequest, "Failed to update the user, no user id was given.")
-                        } else if (session.userId == userId && session.role == UserRole.USER || session.role == UserRole.ADMIN) {
+                        } else if ((session.userId == userId && session.role == UserRole.USER) || session.role == UserRole.ADMIN) {
                             var updatedUser = userRepository.updateUser(userId, user)
                             call.respond(HttpStatusCode.OK, updatedUser)
                         } else {
-                            throw UserException(HttpStatusCode.BadRequest, "You can only update your own account.")
+                            throw UserException(HttpStatusCode.Unauthorized, "You can only update your own account.")
                         }
                     } catch (userException: UserException) {
                         call.respond(userException.httpStatusCode, mapOf(ERROR_RESPONSE_KEY to userException.message))
@@ -67,11 +67,11 @@ fun Routing.userRoute(userRepository: IUserRepository) {
 
                         if (userId == null) {
                             throw UserException(HttpStatusCode.BadRequest, "Failed to delete the user, no user id was given.")
-                        } else if (session.userId == userId && session.role == UserRole.USER || session.role == UserRole.ADMIN) {
+                        } else if ((session.userId == userId && session.role == UserRole.USER) || session.role == UserRole.ADMIN) {
                             userRepository.deleteUser(userId)
-                            call.respond(HttpStatusCode.OK, "User with id: '$userId' has been successfully deleted.")
+                            call.respond(HttpStatusCode.NoContent, "User with id: '$userId' has been successfully deleted.")
                         } else {
-                            throw UserException(HttpStatusCode.BadRequest, "You can only delete your own account.")
+                            throw UserException(HttpStatusCode.Unauthorized, "You can only delete your own account.")
                         }
                     } catch (userException: UserException) {
                         call.respond(userException.httpStatusCode, mapOf(ERROR_RESPONSE_KEY to userException.message))

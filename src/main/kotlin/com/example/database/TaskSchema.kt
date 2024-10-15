@@ -28,5 +28,5 @@ class TaskDAO(id: EntityID<Int>) : IntEntity(id) {
 }
 
 fun taskDAOToTask(dao: TaskDAO): Task {
-    return Task(dao.name, dao.description, Priority.valueOf(dao.priority))
+    return Task(dao.id.value, dao.name, dao.description, Priority.valueOf(dao.priority))
 }

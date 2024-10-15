@@ -19,13 +19,13 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import java.time.LocalDate
 
 class UserRepository : IUserRepository {
-    override suspend fun getUserById(id: Int): User {
+    override suspend fun getUserById(userId: Int): User {
         var userDao = dbQuery {
-            UserDAO.findById(id)
+            UserDAO.findById(userId)
         }
 
         if (userDao == null) {
-            throw IllegalStateException("No user found with id: '$id'")
+            throw IllegalStateException("No user found with id: '$userId'")
         } else {
             return userDAOToUser(userDao)
         }
@@ -59,7 +59,7 @@ class UserRepository : IUserRepository {
         return getUserById(userId.value)
     }
 
-    override suspend fun deleteUser(id: Int): Boolean {
+    override suspend fun deleteUser(userId: Int): Boolean {
         dbQuery {
             UserAuthTable.deleteWhere { UserAuthTable.userId eq id }
             UserTable.deleteWhere { UserTable.id eq id }
@@ -68,9 +68,9 @@ class UserRepository : IUserRepository {
         return true
     }
 
-    override suspend fun updateUser(id: Int, user: User): User {
+    override suspend fun updateUser(userId: Int, user: User): User {
         dbQuery {
-            UserTable.update({ UserTable.id eq id }) {
+            UserTable.update({ UserTable.id eq userId }) {
                 it[UserTable.firstName] = user.firstName
                 it[UserTable.lastName] = user.lastName
                 it[UserTable.email] = user.email
@@ -78,7 +78,7 @@ class UserRepository : IUserRepository {
             }
         }
 
-        return getUserById(id)
+        return getUserById(userId)
     }
 
     override suspend fun doesUserAuthExistsByUsername(username: String): Boolean {

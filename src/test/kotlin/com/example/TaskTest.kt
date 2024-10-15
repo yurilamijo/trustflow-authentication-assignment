@@ -60,11 +60,13 @@ class TaskTest : BaseApplicationTest() {
     }
 
     @Test
-    fun `Test Task creation`() = testApplication {
+    fun `Test create Task`() = testApplication {
         setupTestApplication(this)
         val client = createTestClient(this)
 
-        val task = Task(TEST_VALUE_TASK_PADEL, TEST_VALUE_TASK_PADEL_DESCRIPTION, Priority.LOW)
+        val task = Task(
+            name = TEST_VALUE_TASK_PADEL, description = TEST_VALUE_TASK_PADEL_DESCRIPTION, priority = Priority.LOW
+        )
         val responseCreation = client.post("/tasks") {
             headers {
                 header(HttpHeaders.ContentType, ContentType.Application.Json)
@@ -74,5 +76,20 @@ class TaskTest : BaseApplicationTest() {
             setBody(task)
         }
         assertEquals(HttpStatusCode.Created, responseCreation.status)
+    }
+
+    @Test
+    fun `Test delete Task`() = testApplication {
+        setupTestApplication(this)
+        val client = createTestClient(this)
+
+        val task = fakeTaskRepository.getTaskByName("Bouldering")
+        val responseCreation = client.delete("/tasks/${task?.id}") {
+            headers {
+                header(HttpHeaders.Authorization, "Bearer $token_jwt")
+                header(HEADER_TRUSTFLOW_SESSION, token_session)
+            }
+        }
+        assertEquals(HttpStatusCode.NoContent, responseCreation.status)
     }
 }

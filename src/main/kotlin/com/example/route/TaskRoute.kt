@@ -1,6 +1,8 @@
 package com.example.route
 
+import com.example.constants.ERROR_RESPONSE_KEY
 import com.example.enum.Priority
+import com.example.extension.UserException
 import com.example.extension.authorized
 import com.example.model.Task
 import com.example.plugins.checkUserRole
@@ -26,75 +28,97 @@ fun Routing.taskRoute(taskRepository: ITaskRepository) {
         authorized("USER", "ADMIN") {
             route("/tasks") {
                 get {
-                    call.requireSession()
+                    try {
+                        call.requireSession()
 
-                    val tasks = taskRepository.getAllTask()
-                    call.respond(tasks)
+                        val tasks = taskRepository.getAllTask()
+                        call.respond(tasks)
+                    } catch (userException: UserException) {
+                        call.respond(userException.httpStatusCode, mapOf(ERROR_RESPONSE_KEY to userException.message))
+                    } catch (exception: Exception) {
+                        throw exception
+                    }
                 }
 
                 get("/byName/{name}") {
-                    call.requireSession()
+                    try {
+                        call.requireSession()
 
-                    val name = call.pathParameters[PARAMETER_NAME]
+                        val name = call.pathParameters[PARAMETER_NAME]
 
-                    if (name.isNullOrEmpty()) {
-                        call.respond(HttpStatusCode.BadRequest, "No name was given.")
-                    } else {
-                        val task =
-                            taskRepository.getTaskByName(name) ?: return@get call.respond(HttpStatusCode.NotFound)
+                        if (name.isNullOrEmpty()) {
+                            call.respond(HttpStatusCode.BadRequest, "No name was given.")
+                        } else {
+                            val task =
+                                taskRepository.getTaskByName(name) ?: return@get call.respond(HttpStatusCode.NotFound)
 
-                        call.respond(task)
+                            call.respond(task)
+                        }
+                    } catch (userException: UserException) {
+                        call.respond(userException.httpStatusCode, mapOf(ERROR_RESPONSE_KEY to userException.message))
+                    } catch (exception: Exception) {
+                        throw exception
                     }
                 }
 
                 get("/byPriority/{priority}") {
-                    call.requireSession()
+                    try {
+                        call.requireSession()
 
-                    val priorityAsString = call.pathParameters[PARAMETER_PRIORITY]
+                        val priorityAsString = call.pathParameters[PARAMETER_PRIORITY]
 
-                    if (priorityAsString.isNullOrEmpty()) {
-                        call.respond(HttpStatusCode.BadRequest)
-                    } else if (Priority.enumContains(priorityAsString)) {
-                        val priority = Priority.valueOf(priorityAsString)
-                        val tasksByPriority = taskRepository.getAllTaskByPriority(priority)
+                        if (priorityAsString.isNullOrEmpty()) {
+                            call.respond(HttpStatusCode.BadRequest)
+                        } else if (Priority.enumContains(priorityAsString)) {
+                            val priority = Priority.valueOf(priorityAsString)
+                            val tasksByPriority = taskRepository.getAllTaskByPriority(priority)
 
-                        if (tasksByPriority.isEmpty()) {
-                            call.respond(HttpStatusCode.NotFound)
+                            if (tasksByPriority.isEmpty()) {
+                                call.respond(HttpStatusCode.NotFound)
+                            } else {
+                                call.respond(tasksByPriority)
+                            }
                         } else {
-                            call.respond(tasksByPriority)
+                            call.respond(HttpStatusCode.BadRequest)
                         }
-                    } else {
-                        call.respond(HttpStatusCode.BadRequest)
+                    } catch (userException: UserException) {
+                        call.respond(userException.httpStatusCode, mapOf(ERROR_RESPONSE_KEY to userException.message))
+                    } catch (exception: Exception) {
+                        throw exception
                     }
                 }
 
                 post {
-                    call.requireSession()
-
                     try {
+                        call.requireSession()
                         val task = call.receive<Task>()
                         taskRepository.createTask(task)
                         call.respond(HttpStatusCode.Created, task)
+                    } catch (userException: UserException) {
+                        call.respond(userException.httpStatusCode, mapOf(ERROR_RESPONSE_KEY to userException.message))
                     } catch (exception: Exception) {
-                        when (exception) {
-                            is IllegalStateException, is JsonConvertException -> call.respond(HttpStatusCode.BadRequest)
-                            else -> throw exception
-                        }
+                        throw exception
                     }
                 }
 
                 delete("/{name}") {
-                    call.requireSession()
-                    call.checkUserRole("ADMIN")
+                    try {
+                        call.requireSession()
+                        call.checkUserRole("ADMIN")
 
-                    val name = call.parameters[PARAMETER_NAME]
+                        val name = call.parameters[PARAMETER_NAME]
 
-                    if (name.isNullOrEmpty()) {
-                        call.respond(HttpStatusCode.BadRequest)
-                    } else if (taskRepository.deleteTask(name)) {
-                        call.respond(HttpStatusCode.NoContent)
-                    } else {
-                        call.respond(HttpStatusCode.NotFound)
+                        if (name.isNullOrEmpty()) {
+                            call.respond(HttpStatusCode.BadRequest)
+                        } else if (taskRepository.deleteTask(name)) {
+                            call.respond(HttpStatusCode.NoContent)
+                        } else {
+                            call.respond(HttpStatusCode.NotFound)
+                        }
+                    } catch (userException: UserException) {
+                        call.respond(userException.httpStatusCode, mapOf(ERROR_RESPONSE_KEY to userException.message))
+                    } catch (exception: Exception) {
+                        throw exception
                     }
                 }
             }
