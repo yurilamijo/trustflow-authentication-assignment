@@ -39,7 +39,7 @@ object JWTConfig {
             .withClaim(JWT_CLAIM_USER_ID, user.id)
             .withClaim(JWT_CLAIM_USERNAME, userAuth.username)
             .withClaim(JWT_CLAIM_ROLE, user.role.toString())
-            .withExpiresAt(Date(System.currentTimeMillis() + 300000))
+            .withExpiresAt(Date(System.currentTimeMillis() + 900000))
             .sign(Algorithm.HMAC256(this.secret))
     }
 }
