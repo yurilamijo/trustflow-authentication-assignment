@@ -1,19 +1,11 @@
 package com.example.model
 
+import com.example.enum.Priority
 import kotlinx.serialization.Serializable
-
-enum class Priority {
-    Low, Medium, High, Vital;
-
-    companion object {
-        infix fun enumContains(name: String): Boolean {
-            return enumValues<Priority>().any() { it.name == name }
-        }
-    }
-}
 
 @Serializable
 data class Task(
+    val id: Int = -1,
     val name: String,
     val description: String,
     val priority: Priority
