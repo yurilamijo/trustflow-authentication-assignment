@@ -12,4 +12,5 @@ interface IUserService {
     suspend fun updateUser(userId: Int?, user: User, sessionUserId: Int, sessionRole: UserRole): User
     suspend fun deleteUser(userId: Int?, sessionUserId: Int, sessionRole: UserRole): Boolean
     suspend fun getUserById(userId: Int?): User
+    suspend fun getAllUserByRole(userRoleAsString: String?): List<User>
 }

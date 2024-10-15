@@ -31,6 +31,12 @@ class UserRepository : IUserRepository {
         }
     }
 
+    override suspend fun getAllUserByRole(userRole: UserRole): List<User> {
+        return dbQuery {
+            UserDAO.find {(UserTable.role eq userRole.toString())}.map(::userDAOToUser)
+        }
+    }
+
     override suspend fun getUserAuthByUsername(username: String): UserAuth? {
         return dbQuery {
             UserAuthDAO.find { (UserAuthTable.username eq username) }
