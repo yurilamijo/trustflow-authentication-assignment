@@ -71,4 +71,8 @@ class FakeUserRepository : IUserRepository {
             return user
         }
     }
+
+    override suspend fun getAllUserByRole(userRole: UserRole): List<User> {
+        return allUser.filter { it.role == userRole }
+    }
 }

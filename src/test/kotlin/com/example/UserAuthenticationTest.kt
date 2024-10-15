@@ -268,4 +268,19 @@ class UserAuthenticationTest : BaseApplicationTest() {
 
         assertEquals(HttpStatusCode.NoContent, response.status)
     }
+
+    @Test
+    fun `Test admin user get all users with UserRole USER`() = testApplication {
+        setupTestApplication(this)
+        val client = createTestClient(this)
+
+        val response = client.get("/user/byRole/USER") {
+            headers {
+                header(HttpHeaders.ContentType, ContentType.Application.Json)
+                header(HttpHeaders.Authorization, "Bearer $token_jwt")
+                header(HEADER_TRUSTFLOW_SESSION, token_session)
+            }
+        }
+        assertEquals(HttpStatusCode.OK, response.status)
+    }
 }
