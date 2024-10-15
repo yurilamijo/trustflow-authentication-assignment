@@ -8,4 +8,5 @@ data class UserSession(
     val userId: Int,
     val username: String,
     val role: UserRole,
+    val accessToken: String,
 )

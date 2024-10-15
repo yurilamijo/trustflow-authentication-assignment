@@ -60,10 +60,11 @@ class UserRepository : IUserRepository {
     }
 
     override suspend fun deleteUser(userId: Int): Boolean {
-        dbQuery {
-            UserAuthTable.deleteWhere { UserAuthTable.userId eq id }
-            UserTable.deleteWhere { UserTable.id eq id }
+        var query = dbQuery {
+            UserAuthTable.deleteWhere { UserAuthTable.userId eq userId }
+            UserTable.deleteWhere { UserTable.id eq userId }
         }
+        println(query.toString())
 
         return true
     }

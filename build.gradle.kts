@@ -60,6 +60,7 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-java-time:$exposed_version")
 
     // Dependency Injection
+    implementation("io.insert-koin:koin-core:$koinKtor")
     implementation("io.insert-koin:koin-ktor:$koinKtor")
 
     // Hashing

@@ -14,6 +14,8 @@ import com.example.plugins.configureSerialization
 import com.example.plugins.configureSession
 import com.example.repository.FakeTaskRepository
 import com.example.repository.FakeUserRepository
+import com.example.service.TaskService
+import com.example.service.UserService
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -35,6 +37,8 @@ abstract class BaseApplicationTest {
 
     protected val fakeTaskRepository = FakeTaskRepository()
     protected val fakeUserRepository = FakeUserRepository()
+    protected val taskService = TaskService(fakeTaskRepository)
+    protected val userService = UserService(fakeUserRepository)
 
     protected val TEST_VALUE_USERNAME = "YuriLam"
     protected val TEST_VALUE_PASSWORD = "PasswordYuri"
@@ -45,7 +49,7 @@ abstract class BaseApplicationTest {
             configureSerialization()
             configureSession()
             configureSecurity()
-            configureRouting(fakeTaskRepository, fakeUserRepository)
+            configureRouting(taskService, userService)
         }
     }
 
