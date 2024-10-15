@@ -52,13 +52,13 @@ DROP TABLE IF EXISTS `user`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `firstName` varchar(50) DEFAULT NULL,
-  `lastName` varchar(50) DEFAULT NULL,
+  `firstName` varchar(50) NOT NULL,
+  `lastName` varchar(50) NOT NULL,
   `email` varchar(100) DEFAULT NULL,
   `dateOfBirth` date DEFAULT NULL,
-  `role` varchar(50) DEFAULT NULL,
+  `role` varchar(50) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -67,7 +67,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'Yuri','Lamijo','yurilamijo@hotmail.com','2024-04-08','ADMIN'),(6,'Robbert','Jan',NULL,NULL,'USER');
+INSERT INTO `user` VALUES (4,'Yuri','Lamijo','yurilamijo@hotmail.com','2024-04-20','ADMIN'),(18,'Robbert','Jan',NULL,NULL,'USER');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -86,7 +86,7 @@ CREATE TABLE `userauth` (
   PRIMARY KEY (`id`),
   KEY `userId` (`userId`),
   CONSTRAINT `userauth_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -95,7 +95,7 @@ CREATE TABLE `userauth` (
 
 LOCK TABLES `userauth` WRITE;
 /*!40000 ALTER TABLE `userauth` DISABLE KEYS */;
-INSERT INTO `userauth` VALUES (1,1,'YuriLamijo','$2a$10$.4habz183ll52LFwsed1fO5hK9U8RLAjNZvOY4e162MRPbJB1hKjW'),(6,6,'RobberJan','$2a$10$M1FCHWs.IIdDgf8F0FcmnuXYromm.VHUMfyMIa6PrhLIaLBEQE9yu');
+INSERT INTO `userauth` VALUES (4,4,'YuriLamijo','$2a$10$c/bVI5bEIkGOiHPSs7trhOnSLyA9xMp5Kcj3XreiX.7fTW0e.NxYW'),(18,18,'RobbertJan','$2a$10$Cv4H6o8jjSMLlAkoBYAPHOGZpxzsyCW3E4rAxWhNqfBixWQIyCyIS');
 /*!40000 ALTER TABLE `userauth` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -108,4 +108,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-10-15 13:14:55
+-- Dump completed on 2024-10-15 17:32:18
