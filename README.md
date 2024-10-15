@@ -2,7 +2,7 @@
 
 ### Setup the database
 1. Execute the ``trustflow-assignment.sql`` file to create the database tables and to add some default data.
-2. Add your database url, username and password in the `appliaction.yaml` to correctly configure the database.
+2. Add your database url, username and password in the `application.yaml` to correctly configure the database.
 
 ### Run the backend API
 1. Startup the backend up with `Intellij` through `Application.kt`
