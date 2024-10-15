@@ -259,7 +259,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"username\": \"YuriLam\",\r\n    \"password\": \"PasswordYuri\"\r\n}",
+							"raw": "{\r\n    \"username\": \"YuriLamijo\",\r\n    \"password\": \"PasswordYuri\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -301,7 +301,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"firstName\": \"Yuri\",\r\n    \"lastName\": \"Lamijo\",\r\n    \"username\": \"YuriLamijo\",\r\n    \"password\": \"PasswordYuri\"\r\n}",
+							"raw": "{\r\n    \"firstName\": \"Robbert\",\r\n    \"lastName\": \"Jan\",\r\n    \"username\": \"RobberJan\",\r\n    \"password\": \"PasswordRobbert\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
