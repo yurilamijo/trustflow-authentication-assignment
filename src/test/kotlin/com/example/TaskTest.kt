@@ -84,7 +84,7 @@ class TaskTest : BaseApplicationTest() {
         val client = createTestClient(this)
 
         val task = fakeTaskRepository.getTaskByName("Bouldering")
-        val responseCreation = client.delete("/tasks/${task?.id}") {
+        val responseCreation = client.delete("/tasks/${task?.name}") {
             headers {
                 header(HttpHeaders.Authorization, "Bearer $token_jwt")
                 header(HEADER_TRUSTFLOW_SESSION, token_session)

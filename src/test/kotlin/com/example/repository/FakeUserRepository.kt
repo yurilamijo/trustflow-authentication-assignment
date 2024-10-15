@@ -52,11 +52,8 @@ class FakeUserRepository : IUserRepository {
     }
 
     override suspend fun deleteUser(userId: Int): Boolean {
-        val user = allUser.find { it.id == userId }
-        val userAuth = allUserAuth.find { it.userId == userId }
-
-        allUser.remove(user)
-        allUserAuth.remove(userAuth)
+        allUser.removeIf { it.id == userId }
+        allUserAuth.removeIf { it.userId == userId }
 
         return true
     }
