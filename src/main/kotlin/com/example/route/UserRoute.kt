@@ -1,8 +1,10 @@
 package com.example.route
 
+import com.example.constants.ERROR_RESPONSE_KEY
+import com.example.enum.UserRole
+import com.example.extension.UserException
 import com.example.extension.authorized
 import com.example.model.User
-import com.example.model.UserSession
 import com.example.plugins.requireSession
 import com.example.repository.IUserRepository
 import io.ktor.http.*
@@ -10,52 +12,71 @@ import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import io.ktor.server.sessions.get
-import io.ktor.server.sessions.sessions
 
 private const val PARAMETER_ID = "id"
 
-fun Routing.UserRoute(userRepository: IUserRepository) {
+fun Routing.userRoute(userRepository: IUserRepository) {
     authenticate("jwt-auth") {
         authorized("USER", "ADMIN") {
             route("/user") {
                 get("/{id}") {
-                    var id = call.parameters[PARAMETER_ID]
+                    try {
+                        var userId = call.parameters[PARAMETER_ID]?.toIntOrNull()
 
-                    if (id.isNullOrEmpty()) {
-                        call.respond(HttpStatusCode.BadRequest, "Failed to update user")
-                    } else {
-                        var user = userRepository.getUserById(id.toInt())
-                        call.respond(HttpStatusCode.OK, user)
+                        if (userId == null) {
+                            throw UserException(
+                                HttpStatusCode.BadRequest,
+                                "Failed to retrieve the user, no user id was given."
+                            )
+                        } else {
+                            var user = userRepository.getUserById(userId)
+                            call.respond(HttpStatusCode.OK, user)
+                        }
+                    } catch (userException: UserException) {
+                        call.respond(userException.httpStatusCode, mapOf(ERROR_RESPONSE_KEY to userException.message))
+                    } catch (exception: Exception) {
+                        throw exception
                     }
                 }
 
                 put("/update/{id}") {
-                    call.requireSession()
+                    try {
+                        var session = call.requireSession()
+                        val user = call.receive<User>()
+                        var userId = call.parameters[PARAMETER_ID]?.toIntOrNull()
 
-                    val user = call.receive<User>()
-                    var id = call.parameters[PARAMETER_ID]
-
-                    if (id.isNullOrEmpty()) {
-                        call.respond(HttpStatusCode.BadRequest, "Failed to update user")
-                    } else {
-                        var updatedUser = userRepository.updateUser(id.toInt(), user)
-                        call.respond(HttpStatusCode.OK, updatedUser)
+                        if (userId == null) {
+                            throw UserException(HttpStatusCode.BadRequest, "Failed to update the user, no user id was given.")
+                        } else if (session.userId == userId && session.role == UserRole.USER || session.role == UserRole.ADMIN) {
+                            var updatedUser = userRepository.updateUser(userId, user)
+                            call.respond(HttpStatusCode.OK, updatedUser)
+                        } else {
+                            throw UserException(HttpStatusCode.BadRequest, "You can only update your own account.")
+                        }
+                    } catch (userException: UserException) {
+                        call.respond(userException.httpStatusCode, mapOf(ERROR_RESPONSE_KEY to userException.message))
+                    } catch (exception: Exception) {
+                        throw exception
                     }
                 }
 
                 delete("/delete/{id}") {
-                    call.requireSession()
+                    try {
+                        var session = call.requireSession()
+                        var userId = call.parameters[PARAMETER_ID]?.toIntOrNull()
 
-                    var session = call.sessions.get<UserSession>()
-
-                    var id = call.parameters[PARAMETER_ID]
-
-                    if (id.isNullOrEmpty()) {
-                        call.respond(HttpStatusCode.BadRequest, "Failed to delete user")
-                    } else {
-                        var updatedUser = userRepository.deleteUser(id.toInt())
-                        call.respond(HttpStatusCode.OK, "User with id: '$id' has been successfully deleted")
+                        if (userId == null) {
+                            throw UserException(HttpStatusCode.BadRequest, "Failed to delete the user, no user id was given.")
+                        } else if (session.userId == userId && session.role == UserRole.USER || session.role == UserRole.ADMIN) {
+                            userRepository.deleteUser(userId)
+                            call.respond(HttpStatusCode.OK, "User with id: '$userId' has been successfully deleted.")
+                        } else {
+                            throw UserException(HttpStatusCode.BadRequest, "You can only delete your own account.")
+                        }
+                    } catch (userException: UserException) {
+                        call.respond(userException.httpStatusCode, mapOf(ERROR_RESPONSE_KEY to userException.message))
+                    } catch (exception: Exception) {
+                        throw exception
                     }
                 }
             }

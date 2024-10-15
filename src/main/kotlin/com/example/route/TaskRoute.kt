@@ -35,15 +35,16 @@ fun Routing.taskRoute(taskRepository: ITaskRepository) {
                 get("/byName/{name}") {
                     call.requireSession()
 
-                    val nameAsString = call.pathParameters[PARAMETER_NAME].takeIf { it.isNullOrEmpty() == false }
-                        ?: return@get call.respond(
-                            HttpStatusCode.BadRequest
-                        )
+                    val name = call.pathParameters[PARAMETER_NAME]
 
-                    val task =
-                        taskRepository.getTaskByName(nameAsString) ?: return@get call.respond(HttpStatusCode.NotFound)
+                    if (name.isNullOrEmpty()) {
+                        call.respond(HttpStatusCode.BadRequest, "No name was given.")
+                    } else {
+                        val task =
+                            taskRepository.getTaskByName(name) ?: return@get call.respond(HttpStatusCode.NotFound)
 
-                    call.respond(task)
+                        call.respond(task)
+                    }
                 }
 
                 get("/byPriority/{priority}") {
@@ -53,20 +54,17 @@ fun Routing.taskRoute(taskRepository: ITaskRepository) {
 
                     if (priorityAsString.isNullOrEmpty()) {
                         call.respond(HttpStatusCode.BadRequest)
-                        return@get
                     } else if (Priority.enumContains(priorityAsString)) {
                         val priority = Priority.valueOf(priorityAsString)
                         val tasksByPriority = taskRepository.getAllTaskByPriority(priority)
 
                         if (tasksByPriority.isEmpty()) {
                             call.respond(HttpStatusCode.NotFound)
-                            return@get
                         } else {
                             call.respond(tasksByPriority)
                         }
                     } else {
                         call.respond(HttpStatusCode.BadRequest)
-                        return@get
                     }
                 }
 
@@ -77,10 +75,10 @@ fun Routing.taskRoute(taskRepository: ITaskRepository) {
                         val task = call.receive<Task>()
                         taskRepository.createTask(task)
                         call.respond(HttpStatusCode.Created, task)
-                    } catch (ex: Exception) {
-                        when (ex) {
+                    } catch (exception: Exception) {
+                        when (exception) {
                             is IllegalStateException, is JsonConvertException -> call.respond(HttpStatusCode.BadRequest)
-                            else -> throw ex
+                            else -> throw exception
                         }
                     }
                 }
@@ -93,12 +91,10 @@ fun Routing.taskRoute(taskRepository: ITaskRepository) {
 
                     if (name.isNullOrEmpty()) {
                         call.respond(HttpStatusCode.BadRequest)
-                        return@delete
                     } else if (taskRepository.deleteTask(name)) {
                         call.respond(HttpStatusCode.NoContent)
                     } else {
                         call.respond(HttpStatusCode.NotFound)
-                        return@delete
                     }
                 }
             }

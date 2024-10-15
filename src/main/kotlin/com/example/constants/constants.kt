@@ -26,3 +26,6 @@ const val TEST_JWT_CONFIG_ISSUER = "jwt-issuer"
 const val TEST_JWT_CONFIG_REALM = "ktor sample app"
 const val TEST_JWT_CONFIG_SECRET = "test-secret-123"
 
+// Error constants
+const val ERROR_RESPONSE_KEY = "Error"
+

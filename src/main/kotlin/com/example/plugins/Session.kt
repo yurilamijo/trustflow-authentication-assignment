@@ -3,12 +3,12 @@ package com.example.plugins
 import com.example.constants.FILE_PATH_SESSION_STORAGE
 import com.example.constants.HEADER_CUSTOM_TRUSTFLOW_SESSION
 import com.example.constants.SESSION_SECRET_KEY
+import com.example.extension.UserException
 import com.example.model.UserSession
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.install
-import io.ktor.server.response.respond
 import io.ktor.server.sessions.SessionTransportTransformerMessageAuthentication
 import io.ktor.server.sessions.Sessions
 import io.ktor.server.sessions.directorySessionStorage
@@ -27,12 +27,12 @@ fun Application.configureSession() {
     }
 }
 
-suspend fun ApplicationCall.requireSession() {
+fun ApplicationCall.requireSession(): UserSession {
     val session = sessions.get<UserSession>()
 
     if (session == null ) {
-        respond(HttpStatusCode.BadRequest, "Invalid request, please login again as your session doesn't exists or has been expired.")
+        throw UserException(HttpStatusCode.Unauthorized, "Invalid request, please login again as your session doesn't exists or has been expired.")
     } else {
-        // Continue
+        return session
     }
 }
